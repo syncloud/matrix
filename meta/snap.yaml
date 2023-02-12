@@ -7,7 +7,6 @@ apps:
     - network
     - network-bind
     restart-condition: always
-    before: [php-fpm]
     
   nginx:
     command: bin/service.nginx.sh
