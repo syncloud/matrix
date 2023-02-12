@@ -1,0 +1,46 @@
+apps:
+  postgresql:
+    user: matrix
+    command: bin/service.postgresql.sh start
+    daemon: forking
+    plugs:
+    - network
+    - network-bind
+    restart-condition: always
+    before: [php-fpm]
+    
+  nginx:
+    command: bin/service.nginx.sh
+    user: matrix
+    daemon: simple
+    plugs:
+    - network
+    - network-bind
+    restart-condition: always
+  
+  psql:
+    command: bin/psql.sh
+
+  pgdumpall:
+    command: bin/pg_dumpall.sh
+
+  storage-change:
+    command: hooks/storage-change
+
+  access-change:
+    command: hooks/access-change
+
+  backup-pre-stop:
+    command: hooks/backup-pre-stop
+
+  restore-pre-start:
+    command: hooks/restore-pre-start
+
+  restore-post-start:
+    command: hooks/restore-post-start
+
+confinement: strict
+description: Matrix
+grade: stable
+name: matrix
+summary: Matrix
