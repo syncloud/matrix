@@ -16,7 +16,16 @@ apps:
     - network
     - network-bind
     restart-condition: always
-  
+
+  matrix:
+    command: bin/service.matrix.sh
+    user: matrix
+    daemon: simple
+    plugs:
+    - network
+    - network-bind
+    restart-condition: always
+
   psql:
     command: bin/psql.sh
 
