@@ -26,7 +26,6 @@ APP_CONFIG_PATH = '{0}/config'.format(APP_NAME)
 PSQL_PORT = 5436
 
 SYSTEMD_NGINX = '{0}.nginx'.format(APP_NAME)
-SYSTEMD_PHP_FPM = '{0}.php-fpm'.format(APP_NAME)
 SYSTEMD_POSTGRESQL = '{0}.postgresql'.format(APP_NAME)
 
 class Installer:
@@ -64,10 +63,10 @@ class Installer:
         fs.makepath(join(self.common_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
 
-        check_output('mv {0}/config.php {1}/data'.format(self.config_dir, self.data_dir), shell=True)
         self.fix_permissions()
 
     def install(self):
+        check_output('{0}/bin/generate-keys --private-key /var/snap/matrix/current/private_key.pem'.format(self.app_dir), shell=True)
         self.install_config()
         self.db.init()
         self.db.init_config()
@@ -114,7 +113,7 @@ class Installer:
     def on_disk_change(self):
         
         self.prepare_storage()
-        service.restart(SYSTEMD_PHP_FPM)
+        
         service.restart(SYSTEMD_NGINX)
 
     def prepare_storage(self):
