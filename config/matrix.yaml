@@ -41,7 +41,7 @@ global:
   # sections. For polylith deployments, or monolith deployments using SQLite databases,
   # you must configure the "database" block for each component instead.
   database:
-    connection_string: postgresql://matrix:matrix@host/matrix?host={{ database_dir }}
+    connection_string: postgresql://matrix:matrix@/matrix?host={{ database_dir }}
     max_open_conns: 90
     max_idle_conns: 5
     conn_max_lifetime: -1
