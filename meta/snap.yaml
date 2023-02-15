@@ -8,14 +8,14 @@ apps:
     - network-bind
     restart-condition: always
     
-  nginx:
-    command: bin/service.nginx.sh
-    user: matrix
-    daemon: simple
-    plugs:
-    - network
-    - network-bind
-    restart-condition: always
+#  nginx:
+#    command: bin/service.nginx.sh
+#    user: matrix
+#    daemon: simple
+#    plugs:
+#    - network
+#    - network-bind
+#    restart-condition: always
 
   matrix:
     command: bin/service.matrix.sh
