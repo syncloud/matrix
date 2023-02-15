@@ -17,7 +17,9 @@ wget ${DOWNLOAD_URL}/nginx/nginx-${ARCH}.tar.gz
 tar xf nginx-${ARCH}.tar.gz
 mv nginx ${BUILD_DIR}
 
-wget https://github.com/matrix-org/dendrite/archive/refs/tags/v$VERSION.tar.gz -O matrix.tar.gz
+VERSION=main
+wget https://github.com/cyberb/dendrite/archive/refs/heads/$VERSION.zip
+#wget https://github.com/matrix-org/dendrite/archive/refs/tags/v$VERSION.tar.gz -O matrix.tar.gz
 tar xf matrix.tar.gz
 mv dendrite-$VERSION matrix
 

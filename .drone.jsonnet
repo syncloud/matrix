@@ -26,6 +26,13 @@ local build(arch, test_ui, dind) = [{
                 "./download.sh " + version
             ]
         },
+     {
+            name: "build",
+            image: "golang:" + go,
+            commands: [
+                "./build.sh"
+            ]
+        },
          {
             name: "package postgresql",
             image: "docker:" + dind,
@@ -52,13 +59,7 @@ local build(arch, test_ui, dind) = [{
                 }
             ]
         },
-        {
-            name: "build",
-            image: "golang:" + go,
-            commands: [
-                "./build.sh"
-            ]
-        },
+   
         {
             name: "package",
             image: "debian:buster-slim",
