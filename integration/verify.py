@@ -1,17 +1,13 @@
 import os
-import json
 import pytest
 import requests
 import shutil
-from bs4 import BeautifulSoup
 from os.path import join
-from requests.auth import HTTPBasicAuth
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from subprocess import check_output
 from syncloudlib.integration.hosts import add_host_alias
-from syncloudlib.integration.installer import local_install, wait_for_installer
-from syncloudlib.integration.loop import loop_device_add, loop_device_cleanup
-from syncloudlib.http import wait_for_response
+from syncloudlib.integration.installer import local_install
+from syncloudlib.http import wait_for_rest
 
 TMP_DIR = '/tmp/syncloud'
 
@@ -35,9 +31,13 @@ def module_setup(request, device, platform_data_dir, app_dir, artifact_dir):
         device.run_ssh('ls -la /snap/matrix > {0}/snap.matrix.ls.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ls -la /var/snap > {0}/var.snap.ls.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ls -la /var/snap/matrix > {0}/var.snap.matrix.ls.log'.format(TMP_DIR), throw=False)
-        device.run_ssh('ls -la /var/snap/matrix/current/ > {0}/var.snap.matrix.current.ls.log'.format(TMP_DIR), throw=False)
-        device.run_ssh('ls -la /var/snap/matrix/current/matrix > {0}/var.snap.matrix.current.matrix.ls.log'.format(TMP_DIR), throw=False)
-        device.run_ssh('ls -la /snap/matrix/current/matrix > {0}/snap.matrix.current.matrix.ls.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('ls -la /var/snap/matrix/current/ > {0}/var.snap.matrix.current.ls.log'.format(TMP_DIR),
+                       throw=False)
+        device.run_ssh(
+            'ls -la /var/snap/matrix/current/matrix > {0}/var.snap.matrix.current.matrix.ls.log'.format(TMP_DIR),
+            throw=False)
+        device.run_ssh('ls -la /snap/matrix/current/matrix > {0}/snap.matrix.current.matrix.ls.log'.format(TMP_DIR),
+                       throw=False)
         device.run_ssh('ls -la /var/snap/matrix/common > {0}/var.snap.matrix.common.ls.log'.format(TMP_DIR),
                        throw=False)
         device.run_ssh('ls -la /data > {0}/data.ls.log'.format(TMP_DIR), throw=False)
@@ -69,13 +69,11 @@ def test_install(app_archive_path, device_host, device_password):
 
 
 def test_index(app_domain):
-    response = requests.get('https://{0}'.format(app_domain), verify=False)
-    assert response.status_code == 200, response.text
+    wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 10)
 
 
 def test_matrix(app_domain):
-    response = requests.get('https://{0}/_matrix'.format(app_domain), verify=False)
-    assert response.status_code == 200, response.text
+    wait_for_rest(requests.session(), "https://{0}/_matrix".format(app_domain), 200, 10)
 
 
 def __log_data_dir(device):
