@@ -27,3 +27,5 @@ mv dendrite-$VERSION matrix
 wget https://github.com/vector-im/element-web/releases/download/v$ELEMENT_VERSION/element-v$ELEMENT_VERSION.tar.gz -O element.tar.gz
 tar xf element.tar.gz
 mv element-v$ELEMENT_VERSION ${BUILD_DIR}/element
+cd ${BUILD_DIR}/element
+ln -s /var/snap/matrix/current/config/element.json config.json

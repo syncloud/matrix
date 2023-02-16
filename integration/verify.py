@@ -25,11 +25,8 @@ def module_setup(request, device, platform_data_dir, app_dir, artifact_dir):
         os.mkdir(platform_log_dir)
         device.scp_from_device('{0}/log/*'.format(platform_data_dir), platform_log_dir)
         device.run_ssh('ls -la /var/snap/matrix/current/matrix/config > {0}/config.ls.log'.format(TMP_DIR), throw=False)
-        device.run_ssh('cp /var/snap/matrix/current/matrix/config/config.php {0}'.format(TMP_DIR), throw=False)
         device.run_ssh('top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ps auxfw > {0}/ps.log'.format(TMP_DIR), throw=False)
-        device.run_ssh('systemctl status snap.matrix.php-fpm > {0}/matrix.php-fpm.status.log'.format(TMP_DIR),
-                       throw=False)
         device.run_ssh('netstat -nlp > {0}/netstat.log'.format(TMP_DIR), throw=False)
         device.run_ssh('journalctl | tail -1000 > {0}/journalctl.log'.format(TMP_DIR), throw=False)
         device.run_ssh('tail -500 /var/log/syslog > {0}/syslog.log'.format(TMP_DIR), throw=False)
@@ -71,8 +68,13 @@ def test_install(app_archive_path, device_host, device_password):
     local_install(device_host, device_password, app_archive_path)
 
 
-def test_visible_through_platform(app_domain):
+def test_index(app_domain):
     response = requests.get('https://{0}'.format(app_domain), verify=False)
+    assert response.status_code == 200, response.text
+
+
+def test_matrix(app_domain):
+    response = requests.get('https://{0}/_matrix'.format(app_domain), verify=False)
     assert response.status_code == 200, response.text
 
 
@@ -81,10 +83,6 @@ def __log_data_dir(device):
     device.run_ssh('mount')
     device.run_ssh('ls -la /data/')
     device.run_ssh('ls -la /data/matrix')
-
-
-def test_php_info(device):
-    device.run_ssh('snap run matrix.php -i > {0}/phpinfo.log'.format(TMP_DIR))
 
 
 def test_storage_change_event(device):
