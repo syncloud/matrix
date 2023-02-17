@@ -8,3 +8,4 @@ mkdir -p $BUILD_DIR/bin
 
 cd ${DIR}/build/matrix
 CGO_ENABLED=1 go build -trimpath -v -o $BUILD_DIR/bin ./cmd/...
+rm $BUILD_DIR/bin/dendrite-*
