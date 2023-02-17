@@ -1,7 +1,7 @@
 apps:
   postgresql:
     user: matrix
-    command: bin/service.postgresql.sh start
+    command: bin/service.postgresql.sh
     daemon: forking
     plugs:
     - network
