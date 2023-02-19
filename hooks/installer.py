@@ -27,6 +27,7 @@ PSQL_PORT = 5436
 
 SYSTEMD_NGINX = '{0}.nginx'.format(APP_NAME)
 SYSTEMD_POSTGRESQL = '{0}.postgresql'.format(APP_NAME)
+SYSTEMD_MATRIX = '{0}.matrix'.format(APP_NAME)
 
 class Installer:
     def __init__(self):
@@ -91,7 +92,6 @@ class Installer:
         
         app_storage_dir = storage.init_storage(APP_NAME, USER_NAME)
         
-        self.on_domain_change()
 
     def installed(self):
         return 'installed' in open(self.matrix_config_file).read().strip()
@@ -99,7 +99,7 @@ class Installer:
     def upgrade(self):
         self.db.restore()
         self.prepare_storage()
-        self.update_db_version()
+
 
     def initialize(self):
         self.prepare_storage()
@@ -107,7 +107,6 @@ class Installer:
         self.db.execute('postgres', DB_USER, "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASSWORD))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE matrix OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
-        self.update_db_version()
         with open(self.install_file, 'w') as f:
             f.write('installed\n')
         
@@ -116,16 +115,15 @@ class Installer:
         shutil.copy(join(self.app_dir, 'version'), self.data_dir)
 
     def on_disk_change(self):
-        
         self.prepare_storage()
-        
-        service.restart(SYSTEMD_NGINX)
 
     def prepare_storage(self):
         app_storage_dir = storage.init_storage(APP_NAME, USER_NAME)
         
     def on_domain_change(self):
-        app_domain = urls.get_app_domain_name(APP_NAME)
+        self.install_config()
+        service.restart(SYSTEMD_NGINX)
+        service.restart(SYSTEMD_MATRIX)
 
     def backup_pre_stop(self):
         self.pre_refresh()
