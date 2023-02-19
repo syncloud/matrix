@@ -211,6 +211,15 @@ client_api:
     exempt_user_ids:
     #  - "@user:domain.com"
 
+  ldap:
+    enabled: true
+    uri: "ldap://localhost:389"
+    base_dn: "dc=syncloud,dc=org"
+    search_filter: "(&(objectclass=inetOrgPerson)(cn=%username%)"
+    search_field: "cn"
+    bind_dn: "cn=admin,dc=syncloud,dc=org"
+    bind_password: "syncloud"
+
 # Configuration for the Federation API.
 federation_api:
   # How many times we will try to resend a failed transaction to a specific server. The
