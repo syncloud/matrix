@@ -215,10 +215,21 @@ client_api:
     enabled: true
     uri: "ldap://localhost:389"
     base_dn: "dc=syncloud,dc=org"
-    search_filter: "(&(objectclass=inetOrgPerson)(cn=%username%)"
-    search_field: "cn"
-    bind_dn: "cn=admin,dc=syncloud,dc=org"
-    bind_password: "syncloud"
+
+    # admin bind modes uses a separate admin ldap account to perform user search
+    admin_bind_enabled: false
+    admin_bind_dn: "cn=admin,dc=syncloud,dc=org"
+    admin_bind_password: "syncloud"
+    search_filter: "(&(objectclass=inetOrgPerson)(cn={username})"
+    search_attribute: "cn"
+
+    # direct user bind if admin bind is disabled
+    user_bind_dn: "cn={username},ou=users,dc=syncloud,dc=org"
+
+    # is user an admin or not
+    admin_group_dn: "cn=syncloud,ou=groups,dc=syncloud,dc=org"
+    admin_group_filter: "(memberUid={username})"
+    admin_group_attribute: "memberUid"
 
 # Configuration for the Federation API.
 federation_api:
