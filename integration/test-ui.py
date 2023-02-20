@@ -40,6 +40,10 @@ def test_login(selenium, device_user, device_password):
     selenium.find_by_xpath("//span[contains(.,'Welcome user')]")
     selenium.screenshot('main')
 
+def test_image_upload(selenium, device_user, device_password):
+    selenium.find_by_xpath("//div[text()='Dismiss']").click()
+    selenium.find_by_xpath("//div[@aria-label='Add room']").click()
+    selenium.find_by_xpath("//div[@aria-label='New room']").click()
 
 def test_teardown(driver):
     driver.quit()
