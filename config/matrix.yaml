@@ -217,7 +217,7 @@ client_api:
     base_dn: "dc=syncloud,dc=org"
 
     # admin bind modes uses a separate admin ldap account to perform user search
-    admin_bind_enabled: false
+    admin_bind_enabled: true
     admin_bind_dn: "cn=admin,dc=syncloud,dc=org"
     admin_bind_password: "syncloud"
     search_filter: "(&(objectclass=inetOrgPerson)(cn={username})"
