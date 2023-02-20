@@ -220,6 +220,7 @@ client_api:
     admin_bind_enabled: true
     admin_bind_dn: "cn=admin,dc=syncloud,dc=org"
     admin_bind_password: "syncloud"
+    search_base_dn: "ou=users,dc=syncloud,dc=org"
     search_filter: "(&(objectclass=inetOrgPerson)(cn={username})"
     search_attribute: "cn"
 
