@@ -40,10 +40,33 @@ def test_login(selenium, device_user, device_password):
     selenium.find_by_xpath("//span[contains(.,'Welcome user')]")
     selenium.screenshot('main')
 
-def test_image_upload(selenium, device_user, device_password):
+def test_room(selenium, device_user, device_password):
     selenium.find_by_xpath("//div[text()='Dismiss']").click()
     selenium.find_by_xpath("//div[@aria-label='Add room']").click()
     selenium.find_by_xpath("//div[@aria-label='New room']").click()
+    name = selenium.find_by_id("room_name")
+    name.send_keys("test")
+    selenium.find_by_xpath("//div[@aria-label='Save']").click()
+    selenium.screenshot('room')
+
+def test_message(selenium, device_user, device_password):
+    selenium.find_by_xpath("//div[@aria-label='test']").click()
+    name = selenium.find_by_id("message")
+    name.send_keys("test message")
+    selenium.find_by_xpath("//div[@aria-label='Send']").click()
+    selenium.screenshot('message')
+
+def test_image(selenium, device_user, device_password):
+    file = selenium.driver.find_element(By.XPATH, '//input[@type="file"]')
+    selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
+    file.send_keys(join(DIR, 'images', 'profile.jpeg'))
+    publish = "//button[text()='Publish!']"
+    selenium.wait_driver.until(EC.element_to_be_clickable((By.XPATH, publish)))
+    selenium.find_by_xpath(publish).click()
+    selenium.find_by_xpath("//span[text()='Publish']")
+    assert not selenium.exists_by(By.XPATH, "//span[contains(.,'Error processing')]")
+    selenium.find_by_xpath("//*[text()='test image']")
+    selenium.screenshot('image')
 
 def test_teardown(driver):
     driver.quit()
