@@ -54,12 +54,14 @@ def test_message(selenium, device_user, device_password):
     name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send an encrypted message')]")
     name.send_keys("test message")
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
+    selenium.find_by_xpath("//div[text()='Later']").click()
     selenium.screenshot('message')
 
 def test_image(selenium, device_user, device_password):
     file = selenium.driver.find_element(By.XPATH, '//input[@type="file"]')
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     file.send_keys(join(DIR, 'images', 'profile.jpeg'))
+    selenium.find_by_xpath("//div[text()='More options']").click()
     publish = "//button[text()='Publish!']"
     selenium.wait_driver.until(EC.element_to_be_clickable((By.XPATH, publish)))
     selenium.find_by_xpath(publish).click()
