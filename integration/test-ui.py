@@ -51,7 +51,7 @@ def test_room(selenium, device_user, device_password):
 
 def test_message(selenium, device_user, device_password):
     selenium.find_by_xpath("//div[@title='testroom']").click()
-    name = selenium.find_by_id("message")
+    name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send an encrypted message')]")
     name.send_keys("test message")
     selenium.find_by_xpath("//div[@aria-label='Send']").click()
     selenium.screenshot('message')
