@@ -58,12 +58,12 @@ def test_message(selenium, device_user, device_password):
     selenium.screenshot('message')
 
 def test_image(selenium, device_user, device_password):
-    file = selenium.driver.find_element(By.XPATH, '//input[@type="file"]')
+    file = selenium.driver.find_element(By.XPATH, '//div[@aria-label='Attachment']/../input[@type="file"]')
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     file.send_keys(join(DIR, 'images', 'profile.jpeg'))
     #selenium.find_by_xpath("//div[text()='More options']").click()
     publish = "//button[text()='Publish!']"
-    selenium.wait_driver.until(EC.element_to_be_clickable((By.XPATH, publish)))
+    #selenium.wait_driver.until(EC.element_to_be_clickable((By.XPATH, publish)))
     selenium.find_by_xpath(publish).click()
     selenium.find_by_xpath("//span[text()='Publish']")
     assert not selenium.exists_by(By.XPATH, "//span[contains(.,'Error processing')]")
