@@ -15,29 +15,19 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 @pytest.fixture(scope="session")
-def module_setup(request, device, platform_data_dir, app_dir, artifact_dir):
+def module_setup(request, device, app_dir, artifact_dir):
     def module_teardown():
-        platform_log_dir = join(artifact_dir, 'platform_log')
-        os.mkdir(platform_log_dir)
-        device.scp_from_device('{0}/log/*'.format(platform_data_dir), platform_log_dir)
         device.run_ssh('ls -la /var/snap/matrix/current/config > {0}/config.ls.log'.format(TMP_DIR), throw=False)
         device.run_ssh('cp /var/snap/matrix/current/config/element.json {0}/element.json.log'.format(TMP_DIR), throw=False)
         device.run_ssh('top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ps auxfw > {0}/ps.log'.format(TMP_DIR), throw=False)
         device.run_ssh('netstat -nlp > {0}/netstat.log'.format(TMP_DIR), throw=False)
         device.run_ssh('journalctl | tail -1000 > {0}/journalctl.log'.format(TMP_DIR), throw=False)
-        device.run_ssh('tail -500 /var/log/syslog > {0}/syslog.log'.format(TMP_DIR), throw=False)
-        device.run_ssh('tail -500 /var/log/messages > {0}/messages.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ls -la /snap > {0}/snap.ls.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ls -la /snap/matrix > {0}/snap.matrix.ls.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ls -la /var/snap > {0}/var.snap.ls.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ls -la /var/snap/matrix > {0}/var.snap.matrix.ls.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ls -la /var/snap/matrix/current/ > {0}/var.snap.matrix.current.ls.log'.format(TMP_DIR),
-                       throw=False)
-        device.run_ssh(
-            'ls -la /var/snap/matrix/current/matrix > {0}/var.snap.matrix.current.matrix.ls.log'.format(TMP_DIR),
-            throw=False)
-        device.run_ssh('ls -la /snap/matrix/current/matrix > {0}/snap.matrix.current.matrix.ls.log'.format(TMP_DIR),
                        throw=False)
         device.run_ssh('ls -la /var/snap/matrix/common > {0}/var.snap.matrix.common.ls.log'.format(TMP_DIR),
                        throw=False)
@@ -48,7 +38,6 @@ def module_setup(request, device, platform_data_dir, app_dir, artifact_dir):
         os.mkdir(app_log_dir)
         device.scp_from_device('/var/snap/matrix/common/log/*.log', app_log_dir)
         device.scp_from_device('{0}/*'.format(TMP_DIR), app_log_dir)
-        shutil.copy2('/etc/hosts', app_log_dir)
         check_output('chmod -R a+r {0}'.format(artifact_dir), shell=True)
 
     request.addfinalizer(module_teardown)
@@ -103,3 +92,4 @@ def test_reinstall(app_archive_path, device_host, device_password):
 
 def test_upgrade(app_archive_path, device_host, device_password):
     local_install(device_host, device_password, app_archive_path)
+
