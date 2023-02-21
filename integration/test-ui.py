@@ -45,12 +45,12 @@ def test_room(selenium, device_user, device_password):
     selenium.find_by_xpath("//div[@aria-label='Add room']").click()
     selenium.find_by_xpath("//div[@aria-label='New room']").click()
     name = selenium.find_by_xpath("//input[@label='Name']")
-    name.send_keys("test")
+    name.send_keys("testroom")
     selenium.find_by_xpath("//button[text()='Create room']").click()
     selenium.screenshot('room')
 
 def test_message(selenium, device_user, device_password):
-    selenium.find_by_xpath("//div[@aria-label='test']").click()
+    selenium.find_by_xpath("//div[@title='testroom']").click()
     name = selenium.find_by_id("message")
     name.send_keys("test message")
     selenium.find_by_xpath("//div[@aria-label='Send']").click()
