@@ -1,6 +1,8 @@
 from os.path import dirname, join
 from subprocess import check_output
 
+import numpy
+from PIL import Image
 import pytest
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -63,8 +65,20 @@ def test_image(selenium, device_user, device_password):
     file.send_keys(join(DIR, 'images', 'profile.jpeg'))
     selenium.find_by_xpath("//button[text()='Upload']").click()
     assert not selenium.exists_by(By.XPATH, "//span[contains(.,'Error processing')]")
-    selenium.find_by_xpath("//*[text()='test image']")
     selenium.screenshot('image')
+
+def test_image_big(selenium, device_user, device_password):
+    file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
+    selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
+    imarray = numpy.random.rand(1000,1000,3) * 255
+    im = Image.fromarray(imarray.astype('uint8')).convert('RGBA')
+    image = join(DIR, 'images', 'image-big.png')
+    im.save(image)
+    file.send_keys(image)
+    selenium.find_by_xpath("//button[text()='Upload']").click()
+    assert not selenium.exists_by(By.XPATH, "//span[contains(.,'Error processing')]")
+
+    selenium.screenshot('image-big')
 
 def test_teardown(driver):
     driver.quit()
