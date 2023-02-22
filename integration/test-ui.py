@@ -64,7 +64,7 @@ def test_image(selenium, device_user, device_password):
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     file.send_keys(join(DIR, 'images', 'profile.jpeg'))
     selenium.find_by_xpath("//button[text()='Upload']").click()
-    assert not selenium.exists_by(By.XPATH, "//span[contains(.,'Error processing')]")
+    assert not selenium.exists_by(By.XPATH, "//h2[contains(.,'Upload Failed')]")
     selenium.screenshot('image')
 
 def test_image_big(selenium, device_user, device_password):
@@ -76,8 +76,7 @@ def test_image_big(selenium, device_user, device_password):
     im.save(image)
     file.send_keys(image)
     selenium.find_by_xpath("//button[text()='Upload']").click()
-    assert not selenium.exists_by(By.XPATH, "//span[contains(.,'Error processing')]")
-
+    assert not selenium.exists_by(By.XPATH, "//h2[contains(.,'Upload Failed')]")
     selenium.screenshot('image-big')
 
 def test_teardown(driver):
