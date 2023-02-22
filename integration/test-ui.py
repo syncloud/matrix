@@ -58,7 +58,7 @@ def test_message(selenium, device_user, device_password):
     selenium.screenshot('message')
 
 def test_image(selenium, device_user, device_password):
-    file = selenium.driver.find_element(By.XPATH, '//div[@aria-label='Attachment']/../input[@type="file"]')
+    file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     file.send_keys(join(DIR, 'images', 'profile.jpeg'))
     #selenium.find_by_xpath("//div[text()='More options']").click()
