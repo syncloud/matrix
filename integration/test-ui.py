@@ -1,13 +1,8 @@
-from os.path import dirname, join
-from subprocess import check_output
-
-import numpy
-from PIL import Image
 import pytest
-from selenium.webdriver.common.action_chains import ActionChains
+from os.path import dirname, join
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
+from subprocess import check_output
 from syncloudlib.integration.hosts import add_host_alias
 
 DIR = dirname(__file__)
@@ -70,10 +65,7 @@ def test_image(selenium, device_user, device_password):
 def test_image_big(selenium, device_user, device_password):
     file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
-    imarray = numpy.random.rand(1000,1000,3) * 255
-    im = Image.fromarray(imarray.astype('uint8')).convert('RGBA')
     image = join(DIR, 'images', 'image-big.png')
-    im.save(image)
     file.send_keys(image)
     selenium.find_by_xpath("//button[text()='Upload']").click()
     assert not selenium.exists_by(By.XPATH, "//h2[contains(.,'Upload Failed')]")
