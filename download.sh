@@ -7,11 +7,12 @@ ARCH=$(uname -m)
 DOWNLOAD_URL=https://github.com/syncloud/3rdparty/releases/download/
 VERSION=$1
 ELEMENT_VERSION=1.11.23
+WHATSAPP_VERSION=0.8.2
 apt update
 apt install -y wget
 
 BUILD_DIR=${DIR}/build/snap
-mkdir -p $BUILD_DIR
+mkdir -p $BUILD_DIR/bin
 
 cd ${DIR}/build
 wget ${DOWNLOAD_URL}/nginx/nginx-${ARCH}.tar.gz
@@ -29,3 +30,6 @@ tar xf element.tar.gz
 mv element-v$ELEMENT_VERSION ${BUILD_DIR}/element
 cd ${BUILD_DIR}/element
 ln -s /var/snap/matrix/current/config/element.json config.json
+
+wget https://github.com/mautrix/whatsapp/releases/download/v$WHATSAPP_VERSION/mautrix-whatsapp-arm64 -O $BUILD_DIR/bin/whatsapp
+
