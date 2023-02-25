@@ -6,6 +6,7 @@ cd ${DIR}
 ARCH=$(uname -m)
 DOWNLOAD_URL=https://github.com/syncloud/3rdparty/releases/download/
 VERSION=$1
+GO_ARCH=$2
 ELEMENT_VERSION=1.11.23
 WHATSAPP_VERSION=0.8.2
 apt update
@@ -31,5 +32,5 @@ mv element-v$ELEMENT_VERSION ${BUILD_DIR}/element
 cd ${BUILD_DIR}/element
 ln -s /var/snap/matrix/current/config/element.json config.json
 
-wget https://github.com/mautrix/whatsapp/releases/download/v$WHATSAPP_VERSION/mautrix-whatsapp-arm64 -O $BUILD_DIR/bin/whatsapp
+wget https://github.com/mautrix/whatsapp/releases/download/v$WHATSAPP_VERSION/mautrix-whatsapp-$GO_ARCH -O $BUILD_DIR/bin/whatsapp
 
