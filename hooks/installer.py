@@ -63,8 +63,15 @@ class Installer:
         fs.makepath(join(self.common_dir, 'log'))
         fs.makepath(join(self.common_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
-
+        self.register_whatsapp()
         self.fix_permissions()
+
+    def register_whatsapp(self):
+        check_output([
+            '{0}/bin/whatsapp'.format(self.app_dir),
+            '-c', '{0}/whatsapp.yaml'.format(self.config_dir),
+            '-r', '{0}/whatsapp-registration.yaml'.format(self.config_dir)
+        ])
 
     def install(self):
         check_output('{0}/bin/generate-keys --private-key /var/snap/matrix/current/private_key.pem'.format(self.app_dir), shell=True)
@@ -92,9 +99,6 @@ class Installer:
         
         app_storage_dir = storage.init_storage(APP_NAME, USER_NAME)
         
-
-    def installed(self):
-        return 'installed' in open(self.matrix_config_file).read().strip()
 
     def upgrade(self):
         self.db.restore()

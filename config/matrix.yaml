@@ -154,7 +154,7 @@ app_service_api:
 
   # Appservice configuration files to load into this homeserver.
   config_files:
-  #  - /path/to/appservice_registration.yaml
+   - /var/snap/matrix/current/config/whatsapp-registration.yaml
 
 # Configuration for the Client API.
 client_api:
