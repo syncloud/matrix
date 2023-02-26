@@ -4,7 +4,7 @@ homeserver:
   address: /var/snap/matrix/current/matrix.socket
 
   # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
-  domain: {{ domain }}
+  domain: {{{ domain }}}
 
   # What software is the homeserver running?
   # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
