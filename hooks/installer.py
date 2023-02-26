@@ -69,6 +69,7 @@ class Installer:
     def register_whatsapp(self):
         check_output([
             '{0}/bin/whatsapp'.format(self.app_dir),
+            '-g',
             '-c', '{0}/whatsapp.yaml'.format(self.config_dir),
             '-r', '{0}/whatsapp-registration.yaml'.format(self.config_dir)
         ])
