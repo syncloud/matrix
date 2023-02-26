@@ -19,6 +19,9 @@ def module_setup(request, device, app_dir, artifact_dir):
     def module_teardown():
         device.run_ssh('ls -la /var/snap/matrix/current/config > {0}/config.ls.log'.format(TMP_DIR), throw=False)
         device.run_ssh('cp /var/snap/matrix/current/config/element.json {0}/element.json.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('cp /var/snap/matrix/current/config/matrix.yaml {0}/matrix.yaml.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('cp /var/snap/matrix/current/config/whatsapp.yaml {0}/whatsapp.yaml.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('cp /var/snap/matrix/current/config/whatsapp-registration.yaml {0}/whatsapp-registration.yaml.log'.format(TMP_DIR), throw=False)
         device.run_ssh('top -bn 1 -w 500 -c > {0}/top.log'.format(TMP_DIR), throw=False)
         device.run_ssh('ps auxfw > {0}/ps.log'.format(TMP_DIR), throw=False)
         device.run_ssh('netstat -nlp > {0}/netstat.log'.format(TMP_DIR), throw=False)
