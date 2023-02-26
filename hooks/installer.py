@@ -58,7 +58,7 @@ class Installer:
             'config_dir': self.config_dir,
             'domain': urls.get_app_domain_name(APP_NAME)
         }
-        gen.generate_files(templates_path, self.config_dir, variables)
+        gen.generate_files(templates_path, self.config_dir, variables, variable_tags=('{{{', '}}}'))
 
         fs.makepath(join(self.common_dir, 'log'))
         fs.makepath(join(self.common_dir, 'nginx'))
