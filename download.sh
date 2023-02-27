@@ -32,5 +32,9 @@ mv element-v$ELEMENT_VERSION ${BUILD_DIR}/element
 cd ${BUILD_DIR}/element
 ln -s /var/snap/matrix/current/config/element.json config.json
 
-wget https://github.com/mautrix/whatsapp/releases/download/v$WHATSAPP_VERSION/mautrix-whatsapp-$GO_ARCH -O $BUILD_DIR/bin/whatsapp
-chmod +x $BUILD_DIR/bin/whatsapp
+#wget https://github.com/mautrix/whatsapp/releases/download/v$WHATSAPP_VERSION/mautrix-whatsapp-$GO_ARCH -O $BUILD_DIR/bin/whatsapp
+#chmod +x $BUILD_DIR/bin/whatsapp
+
+wget https://github.com/cyberb/whatsapp/archive/refs/heads/master.tar.gz
+tar -xf master.tar.gz
+
