@@ -26,12 +26,14 @@ wget https://github.com/cyberb/dendrite/archive/refs/heads/$VERSION.tar.gz -O ma
 tar xf matrix.tar.gz
 mv dendrite-$VERSION matrix
 
+cd ${DIR}/build
 wget https://github.com/vector-im/element-web/releases/download/v$ELEMENT_VERSION/element-v$ELEMENT_VERSION.tar.gz -O element.tar.gz
 tar xf element.tar.gz
 mv element-v$ELEMENT_VERSION ${BUILD_DIR}/element
 cd ${BUILD_DIR}/element
 ln -s /var/snap/matrix/current/config/element.json config.json
 
+cd ${DIR}/build
 #wget https://github.com/mautrix/whatsapp/releases/download/v$WHATSAPP_VERSION/mautrix-whatsapp-$GO_ARCH -O $BUILD_DIR/bin/whatsapp
 #chmod +x $BUILD_DIR/bin/whatsapp
 
