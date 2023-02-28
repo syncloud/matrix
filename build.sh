@@ -21,4 +21,5 @@ use (
 )
 EOT
 
-go build -tags nocrypto -o $BUILD_DIR/bin/whatsapp ./whatsapp-master
+GO_LDFLAGS="-s -w -linkmode external -extldflags -static -X main.Tag=0 -X main.Commit=0 -X 'main.BuildTime=`date '+%b %_d %Y, %H:%M:%S'`'"
+go build -tags nocrypto -ldflags "$GO_LDFLAGS" -o $BUILD_DIR/bin/whatsapp ./whatsapp-master
