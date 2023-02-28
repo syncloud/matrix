@@ -11,7 +11,12 @@ CGO_ENABLED=1 go build -trimpath -v -o $BUILD_DIR/bin ./cmd/...
 rm $BUILD_DIR/bin/dendrite-*
 
 cd ${DIR}/build/whatsapp-master
-#apt update
-#apt install -y libolm-dev
-GO_LDFLAGS="-s -w -linkmode external -extldflags -static -X main.Tag=0 -X main.Commit=0 -X 'main.BuildTime=`date '+%b %_d %Y, %H:%M:%S'`'"
-go build -tags nocrypto -ldflags "$GO_LDFLAGS" -o $BUILD_DIR/bin/whatsapp
+cat <<EOT >> work.go
+go 1.18
+
+use (
+    ../mautrix-go-master
+)
+EOT
+
+go build -tags nocrypto -o $BUILD_DIR/bin/whatsapp
