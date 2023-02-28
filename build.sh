@@ -10,14 +10,15 @@ cd ${DIR}/build/matrix
 CGO_ENABLED=1 go build -trimpath -v -o $BUILD_DIR/bin ./cmd/...
 rm $BUILD_DIR/bin/dendrite-*
 
-cd ${DIR}/build/whatsapp-master
+cd ${DIR}/build
 cat <<EOT >> go.work
 
 go 1.18
 
 use (
-    ../mautrix-go-master
+    ./whatsapp-master
+    ./mautrix-go-master
 )
 EOT
 
-go build -tags nocrypto -o $BUILD_DIR/bin/whatsapp
+go build -tags nocrypto -o $BUILD_DIR/bin/whatsapp ./whatsapp-master
