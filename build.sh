@@ -11,7 +11,8 @@ CGO_ENABLED=1 go build -trimpath -v -o $BUILD_DIR/bin ./cmd/...
 rm $BUILD_DIR/bin/dendrite-*
 
 cd ${DIR}/build/whatsapp-master
-cat <<EOT >> work.go
+cat <<EOT >> go.work
+
 go 1.18
 
 use (
