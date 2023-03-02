@@ -55,7 +55,7 @@ def test_message(selenium, device_user, device_password):
     selenium.screenshot('message')
 
 def test_image(selenium, device_user, device_password):
-    file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
+    file = selenium.find_by_xpath("//div[@aria-label='Attachment']/../input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     file.send_keys(join(DIR, 'images', 'profile.jpeg'))
     selenium.find_by_xpath("//button[text()='Upload']").click()
@@ -63,7 +63,7 @@ def test_image(selenium, device_user, device_password):
     selenium.screenshot('image')
 
 def test_image_big(selenium, device_user, device_password):
-    file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
+    file = selenium.find_by_xpath("//div[@aria-label='Attachment']/../input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     image = join(DIR, 'images', 'image-big.png')
     file.send_keys(image)
@@ -72,15 +72,15 @@ def test_image_big(selenium, device_user, device_password):
     selenium.screenshot('image-big')
 
 def test_whatsapp_bot(selenium, app_domain):
-    selenium.driver.find_element(By.XPATH, "//div[@aria-label='Add']").click()
-    selenium.driver.find_element(By.XPATH, "//div[@aria-label='Start new chat']").click()
+    selenium.find_by_xpath("//div[@aria-label='Add']").click()
+    selenium.find_by_xpath("//div[@aria-label='Start new chat']").click()
     bot = '@whatsappbot:matrix.{0}'.format(app_domain)
-    selenium.driver.find_element(By.XPATH, "//input[@data-testid='invite-dialog-input'']").send_keys(bot)
+    selenium.find_by_xpath("//input[@data-testid='invite-dialog-input'']").send_keys(bot)
     selenium.find_by_xpath("//div[text()='Go']").click()
     name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send a message...')]")
     name.send_keys("help")
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
-    selenium.driver.find_element(By.XPATH, "//div[@aria-label='bot response']")
+    selenium.find_by_xpath("//div[@aria-label='bot response']")
     selenium.screenshot('whatsapp-bot')
 
 def test_teardown(driver):
