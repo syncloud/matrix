@@ -98,7 +98,7 @@ class Installer:
         else:
             self.initialize()
         
-        app_storage_dir = storage.init_storage(APP_NAME, USER_NAME)
+        storage.init_storage(APP_NAME, USER_NAME)
         
 
     def upgrade(self):
@@ -109,7 +109,6 @@ class Installer:
 
     def initialize(self):
         self.prepare_storage()
-        app_storage_dir = storage.init_storage(APP_NAME, USER_NAME)
         self.db.execute('postgres', DB_USER, "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASSWORD))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE matrix OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
@@ -125,7 +124,7 @@ class Installer:
         self.prepare_storage()
 
     def prepare_storage(self):
-        app_storage_dir = storage.init_storage(APP_NAME, USER_NAME)
+        storage.init_storage(APP_NAME, USER_NAME)
         
     def on_domain_change(self):
         self.install_config()

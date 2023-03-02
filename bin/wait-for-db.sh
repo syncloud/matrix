@@ -11,3 +11,4 @@ while ! snap run matrix.psql matrix -c "" ; do
     echo "waiting for db $retry/$retries"
     sleep 2
 done
+echo "db is ready"
