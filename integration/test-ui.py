@@ -77,7 +77,7 @@ def test_whatsapp_bot(selenium, app_domain):
     bot = '@whatsappbot:{0}'.format(app_domain)
     selenium.find_by_xpath("//input[@data-testid='invite-dialog-input']").send_keys(bot)
     selenium.find_by_xpath("//div[text()='Go']").click()
-    name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send a message...')]")
+    name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send a message')]")
     name.send_keys("help")
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
     selenium.find_by_xpath("//div[@aria-label='bot response']")
@@ -85,3 +85,4 @@ def test_whatsapp_bot(selenium, app_domain):
 
 def test_teardown(driver):
     driver.quit()
+
