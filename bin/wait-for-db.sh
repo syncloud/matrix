@@ -13,3 +13,4 @@ while ! diff $NEXT $CURRENT; do
     echo "waiting for db $retry/$retries (current: $(cat $CURRENT), next $(cat $NEXT)"
     sleep 2
 done
+echo "db is ready (current: $(cat $CURRENT), next $(cat $NEXT)"
