@@ -75,7 +75,7 @@ class Installer:
         ])
 
     def install(self):
-        check_output('{0}/bin/generate-keys --private-key /var/snap/matrix/current/private_key.pem'.format(self.app_dir), shell=True)
+        check_output('{0}/matrix/bin/generate-keys --private-key /var/snap/matrix/current/private_key.pem'.format(self.app_dir), shell=True)
         self.install_config()
         self.db.init()
         self.db.init_config()
