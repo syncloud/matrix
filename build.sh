@@ -6,10 +6,6 @@ cd ${DIR}
 BUILD_DIR=${DIR}/build/snap
 mkdir -p $BUILD_DIR/bin
 
-cd ${DIR}/build/matrix
-go build -ldflags '-s -w -linkmode external -extldflags -static' -trimpath -v -o $BUILD_DIR/bin/dendrite ./cmd/dendrite
-go build -ldflags '-s -w -linkmode external -extldflags -static' -trimpath -v -o $BUILD_DIR/bin/generate-keys ./cmd/generate-keys
-
 cd ${DIR}/build
 cat <<EOT >> go.work
 

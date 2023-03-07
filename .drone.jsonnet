@@ -27,7 +27,14 @@ local build(arch, test_ui, dind) = [{
             ]
         },
      {
-            name: "build",
+            name: "build matrix",
+            image: "golang:" + go,
+            commands: [
+                "./matrix/build.sh"
+            ]
+        },
+    {
+            name: "build whatsapp",
             image: "golang:" + go,
             commands: [
                 "./build.sh"
