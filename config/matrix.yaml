@@ -10,7 +10,7 @@ version: 2
 # Global Matrix configuration. This configuration applies to all components.
 global:
   # The domain name of this homeserver.
-  server_name: {{ domain }}
+  server_name: {{{ domain }}}
 
   # The path to the signing private key file, used to sign requests and events.
   # Note that this is NOT the same private key as used for TLS! To generate a
@@ -41,7 +41,7 @@ global:
   # sections. For polylith deployments, or monolith deployments using SQLite databases,
   # you must configure the "database" block for each component instead.
   database:
-    connection_string: postgresql://matrix:matrix@/matrix?host={{ database_dir }}&port={{ db_psql_port }}
+    connection_string: postgresql://matrix:matrix@/matrix?host={{{ database_dir }}}&port={{{ db_psql_port }}}
     max_open_conns: 90
     max_idle_conns: 5
     conn_max_lifetime: -1
@@ -154,7 +154,7 @@ app_service_api:
 
   # Appservice configuration files to load into this homeserver.
   config_files:
-  #  - /path/to/appservice_registration.yaml
+   - /var/snap/matrix/current/config/whatsapp-registration.yaml
 
 # Configuration for the Client API.
 client_api:

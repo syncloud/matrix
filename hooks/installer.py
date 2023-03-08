@@ -58,16 +58,24 @@ class Installer:
             'config_dir': self.config_dir,
             'domain': urls.get_app_domain_name(APP_NAME)
         }
-        gen.generate_files(templates_path, self.config_dir, variables)
+        gen.generate_files(templates_path, self.config_dir, variables, variable_tags=('{{{', '}}}'))
 
         fs.makepath(join(self.common_dir, 'log'))
         fs.makepath(join(self.common_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
-
+        self.register_whatsapp()
         self.fix_permissions()
 
+    def register_whatsapp(self):
+        check_output([
+            '{0}/bin/whatsapp'.format(self.app_dir),
+            '-g',
+            '-c', '{0}/whatsapp.yaml'.format(self.config_dir),
+            '-r', '{0}/whatsapp-registration.yaml'.format(self.config_dir)
+        ])
+
     def install(self):
-        check_output('{0}/bin/generate-keys --private-key /var/snap/matrix/current/private_key.pem'.format(self.app_dir), shell=True)
+        check_output('{0}/matrix/bin/generate-keys --private-key /var/snap/matrix/current/private_key.pem'.format(self.app_dir), shell=True)
         self.install_config()
         self.db.init()
         self.db.init_config()
@@ -90,23 +98,22 @@ class Installer:
         else:
             self.initialize()
         
-        app_storage_dir = storage.init_storage(APP_NAME, USER_NAME)
+        storage.init_storage(APP_NAME, USER_NAME)
         
-
-    def installed(self):
-        return 'installed' in open(self.matrix_config_file).read().strip()
 
     def upgrade(self):
         self.db.restore()
         self.prepare_storage()
+        self.update_db_version()
 
 
     def initialize(self):
         self.prepare_storage()
-        app_storage_dir = storage.init_storage(APP_NAME, USER_NAME)
         self.db.execute('postgres', DB_USER, "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASSWORD))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE matrix OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
+        self.db.execute('postgres', DB_USER, "CREATE DATABASE whatsapp OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
+        self.update_db_version()
         with open(self.install_file, 'w') as f:
             f.write('installed\n')
         
@@ -118,7 +125,7 @@ class Installer:
         self.prepare_storage()
 
     def prepare_storage(self):
-        app_storage_dir = storage.init_storage(APP_NAME, USER_NAME)
+        storage.init_storage(APP_NAME, USER_NAME)
         
     def on_domain_change(self):
         self.install_config()

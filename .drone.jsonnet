@@ -1,6 +1,6 @@
 local name = "matrix";
 local browser = "firefox";
-local go = "1.18.2-buster";
+local go = "1.18.2-bullseye";
 local version = "0.11.1";
 
 local build(arch, test_ui, dind) = [{
@@ -23,11 +23,18 @@ local build(arch, test_ui, dind) = [{
             name: "download",
             image: "debian:buster-slim",
             commands: [
-                "./download.sh " + version
+                "./download.sh " + version + " " + arch
             ]
         },
      {
-            name: "build",
+            name: "build matrix",
+            image: "golang:" + go,
+            commands: [
+                "./matrix/build.sh"
+            ]
+        },
+    {
+            name: "build whatsapp",
             image: "golang:" + go,
             commands: [
                 "./build.sh"
