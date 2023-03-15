@@ -6,7 +6,7 @@ cd ${DIR}
 BUILD_DIR=${DIR}/../build/snap/python
 docker ps -a -q --filter ancestor=python:syncloud --format="{{.ID}}" | xargs docker stop | xargs docker rm || true
 docker rmi python:syncloud || true
-while ! build -t python:syncloud . ; do
+while ! docker build -t python:syncloud . ; do
   echo "retry docker"
 done
 docker run python:syncloud python --help
