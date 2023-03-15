@@ -21,7 +21,7 @@ tar xf nginx-${ARCH}.tar.gz
 mv nginx ${BUILD_DIR}
 
 cd ${DIR}/build
-VERSION=unix-ldap
+VERSION=syncloud
 wget https://github.com/cyberb/dendrite/archive/refs/heads/$VERSION.tar.gz -O matrix.tar.gz
 #wget https://github.com/matrix-org/dendrite/archive/refs/tags/v$VERSION.tar.gz -O matrix.tar.gz
 tar xf matrix.tar.gz
