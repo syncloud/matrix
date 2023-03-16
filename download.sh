@@ -47,7 +47,8 @@ tar xf v${MAUTRIX_GO}.tar.gz
 rm v${MAUTRIX_GO}.tar.gz
 mv go-${MAUTRIX_GO} mautrix-go
 
-wget https://github.com/cyberb/whatsapp/archive/refs/heads/master.tar.gz
+#wget https://github.com/cyberb/whatsapp/archive/refs/heads/master.tar.gz
+wget https://github.com/mautrix/whatsapp/archive/refs/heads/master.tar.gz
 tar -xf master.tar.gz
 rm -rf master.tar.gz
 mv whatsapp-master whatsapp
