@@ -12,8 +12,8 @@ cat <<EOT >> go.work
 go 1.18
 
 use (
-    ./whatsapp-master
-    ./mautrix-go-master
+    ./whatsapp
+    ./mautrix-go
 )
 EOT
 

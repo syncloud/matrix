@@ -9,6 +9,7 @@ VERSION=$1
 GO_ARCH=$2
 ELEMENT_VERSION=1.11.23
 WHATSAPP_VERSION=0.8.2
+MAUTRIX_GO=0.15.0
 apt update
 apt install -y wget
 
@@ -38,11 +39,16 @@ cd ${DIR}/build
 #wget https://github.com/mautrix/whatsapp/releases/download/v$WHATSAPP_VERSION/mautrix-whatsapp-$GO_ARCH -O $BUILD_DIR/bin/whatsapp
 #chmod +x $BUILD_DIR/bin/whatsapp
 
-wget https://github.com/cyberb/mautrix-go/archive/refs/heads/master.tar.gz
-tar -xf master.tar.gz
-rm -rf master.tar.gz
+#wget https://github.com/cyberb/mautrix-go/archive/refs/heads/master.tar.gz
+#tar -xf master.tar.gz
+#rm -rf master.tar.gz
+wget https://github.com/mautrix/go/archive/refs/tags/v${MAUTRIX_GO}.tar.gz
+tar xf v${MAUTRIX_GO}.tar.gz
+rm v${MAUTRIX_GO}.tar.gz
+mv go-${MAUTRIX_GO} mautrix-go
 
 wget https://github.com/cyberb/whatsapp/archive/refs/heads/master.tar.gz
 tar -xf master.tar.gz
 rm -rf master.tar.gz
+mv whatsapp-master whatsapp
 
