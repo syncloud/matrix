@@ -38,11 +38,11 @@ ln -s /var/snap/matrix/current/config/element.json config.json
 cd ${DIR}/build
 #wget https://github.com/mautrix/whatsapp/releases/download/v$WHATSAPP_VERSION/mautrix-whatsapp-$GO_ARCH -O $BUILD_DIR/bin/whatsapp
 #chmod +x $BUILD_DIR/bin/whatsapp
-
-wget https://github.com/cyberb/mautrix-go/archive/refs/heads/master.tar.gz
-tar -xf master.tar.gz
-rm -rf master.tar.gz
-mv mautrix-go-master mautrix-go
+BRANCH=backup
+wget https://github.com/cyberb/mautrix-go/archive/refs/heads/$BRANCH.tar.gz
+tar -xf $BRANCH.tar.gz
+rm -rf $BRANCH.tar.gz
+mv mautrix-go-$BRANCH mautrix-go
 #wget https://github.com/mautrix/go/archive/refs/tags/v${MAUTRIX_GO}.tar.gz
 #tar xf v${MAUTRIX_GO}.tar.gz
 #rm v${MAUTRIX_GO}.tar.gz
