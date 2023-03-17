@@ -38,7 +38,7 @@ ln -s /var/snap/matrix/current/config/element.json config.json
 cd ${DIR}/build
 #wget https://github.com/mautrix/whatsapp/releases/download/v$WHATSAPP_VERSION/mautrix-whatsapp-$GO_ARCH -O $BUILD_DIR/bin/whatsapp
 #chmod +x $BUILD_DIR/bin/whatsapp
-BRANCH=backup
+BRANCH=master
 wget https://github.com/cyberb/mautrix-go/archive/refs/heads/$BRANCH.tar.gz
 tar -xf $BRANCH.tar.gz
 rm -rf $BRANCH.tar.gz
