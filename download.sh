@@ -43,7 +43,7 @@ cd ${DIR}/build
 #tar -xf $BRANCH.tar.gz
 #rm -rf $BRANCH.tar.gz
 #mv mautrix-go-$BRANCH mautrix-go
-wget https://github.com/mautrix/go/archive/refs/tags/${MAUTRIX_GO}.tar.gz
+wget https://github.com/mautrix/go/archive/refs/heads/${MAUTRIX_GO}.tar.gz
 tar xf ${MAUTRIX_GO}.tar.gz
 rm ${MAUTRIX_GO}.tar.gz
 mv go-${MAUTRIX_GO} mautrix-go
