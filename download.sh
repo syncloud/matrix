@@ -9,7 +9,7 @@ VERSION=$1
 GO_ARCH=$2
 ELEMENT_VERSION=1.11.23
 WHATSAPP_VERSION=0.8.2
-MAUTRIX_GO=0.15.0
+MAUTRIX_GO=master
 apt update
 apt install -y wget
 
@@ -38,15 +38,15 @@ ln -s /var/snap/matrix/current/config/element.json config.json
 cd ${DIR}/build
 #wget https://github.com/mautrix/whatsapp/releases/download/v$WHATSAPP_VERSION/mautrix-whatsapp-$GO_ARCH -O $BUILD_DIR/bin/whatsapp
 #chmod +x $BUILD_DIR/bin/whatsapp
-BRANCH=master
-wget https://github.com/cyberb/mautrix-go/archive/refs/heads/$BRANCH.tar.gz
-tar -xf $BRANCH.tar.gz
-rm -rf $BRANCH.tar.gz
-mv mautrix-go-$BRANCH mautrix-go
-#wget https://github.com/mautrix/go/archive/refs/tags/v${MAUTRIX_GO}.tar.gz
-#tar xf v${MAUTRIX_GO}.tar.gz
-#rm v${MAUTRIX_GO}.tar.gz
-#mv go-${MAUTRIX_GO} mautrix-go
+#BRANCH=master
+#wget https://github.com/cyberb/mautrix-go/archive/refs/heads/$BRANCH.tar.gz
+#tar -xf $BRANCH.tar.gz
+#rm -rf $BRANCH.tar.gz
+#mv mautrix-go-$BRANCH mautrix-go
+wget https://github.com/mautrix/go/archive/refs/tags/v${MAUTRIX_GO}.tar.gz
+tar xf v${MAUTRIX_GO}.tar.gz
+rm v${MAUTRIX_GO}.tar.gz
+mv go-${MAUTRIX_GO} mautrix-go
 
 #wget https://github.com/cyberb/whatsapp/archive/refs/heads/master.tar.gz
 wget https://github.com/mautrix/whatsapp/archive/refs/heads/master.tar.gz
