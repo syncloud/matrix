@@ -9,7 +9,7 @@ mkdir -p $BUILD_DIR/bin
 cd ${DIR}/build
 cat <<EOT >> go.work
 
-go 1.18
+go 1.19
 
 use (
     ./whatsapp
