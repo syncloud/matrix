@@ -2,6 +2,7 @@ import logging
 import shutil
 import uuid
 import re
+import os
 from os import path
 from os.path import isfile
 from os.path import join
