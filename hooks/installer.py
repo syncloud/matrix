@@ -41,7 +41,9 @@ class Installer:
         self.config_dir = join(self.data_dir, 'config')
         self.db = Database(self.app_dir, self.data_dir, self.config_dir, PSQL_PORT)
         self.install_file = join(self.common_dir, 'installed')
-         
+        self.new_version = join(self.app_dir, 'version')
+        self.current_version = join(self.data_dir, 'version')
+
     def install_config(self):
 
         home_folder = join('/home', USER_NAME)
@@ -85,11 +87,10 @@ class Installer:
 
     def post_refresh(self):
         self.install_config()
-
         self.db.remove()
         self.db.init()
-        
         self.db.init_config()
+        self.clear_version()
 
     def configure(self):
         
@@ -104,7 +105,7 @@ class Installer:
     def upgrade(self):
         self.db.restore()
         self.prepare_storage()
-        self.update_db_version()
+        self.update_version()
 
 
     def initialize(self):
@@ -113,13 +114,17 @@ class Installer:
         self.db.execute('postgres', DB_USER, "CREATE DATABASE matrix OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE whatsapp OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
-        self.update_db_version()
+        self.update_version()
         with open(self.install_file, 'w') as f:
             f.write('installed\n')
         
 
-    def update_db_version(self):
-        shutil.copy(join(self.app_dir, 'version'), self.data_dir)
+    def update_version(self):
+        shutil.copy(self.new_version, self.current_version)
+
+    def clear_version(self):
+        if os.path.exists(self.current_version):
+            os.remove(self.current_version)
 
     def on_disk_change(self):
         self.prepare_storage()
