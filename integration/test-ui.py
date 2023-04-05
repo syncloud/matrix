@@ -82,9 +82,10 @@ def test_whatsapp_bot(selenium, app_domain):
     name.send_keys("help")
     selenium.screenshot('whatsapp-bot-help')
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
-    #selenium.find_by_xpath("//div[@aria-label='bot response']")
+    selenium.find_by_xpath("//div[@aria-label='bot response']")
     selenium.screenshot('whatsapp-bot-answer')
 
 def test_teardown(driver):
     driver.quit()
+
 
