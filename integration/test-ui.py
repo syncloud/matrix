@@ -94,6 +94,7 @@ def whatsapp_bot(selenium, app_domain, attempt):
     name.send_keys("help")
     selenium.screenshot('whatsapp-bot-help-{0}'.format(attempt))
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
+    selenium.screenshot('whatsapp-bot-help-sent-{0}'.format(attempt))
     selenium.find_by_xpath("//h4[text()='Group invites']")
     selenium.screenshot('whatsapp-bot-answer-{0}'.format(attempt))
 
