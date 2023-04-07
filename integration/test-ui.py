@@ -72,18 +72,30 @@ def test_image_big(selenium, device_user, device_password):
     selenium.screenshot('image-big')
 
 def test_whatsapp_bot(selenium, app_domain):
+    attempt = 0
+    attempts = 10
+    while True:
+        try:
+            whatsapp_bot(selenium, app_domain, attempt)
+        except Exception as e:
+            attempt += 1
+            if attempt > attempts:
+                raise e
+            
+
+def whatsapp_bot(selenium, app_domain, attempt):
     selenium.find_by_xpath("//div[@aria-label='Add']").click()
     selenium.find_by_xpath("//div[@aria-label='Start new chat']").click()
     bot = '@whatsappbot:{0}'.format(app_domain)
     selenium.find_by_xpath("//input[@data-testid='invite-dialog-input']").send_keys(bot)
-    selenium.screenshot('whatsapp-bot-invite')
+    selenium.screenshot('whatsapp-bot-invite-{0}'.format(attempt))
     selenium.find_by_xpath("//div[text()='Go']").click()
     name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send a message')]")
     name.send_keys("help")
-    selenium.screenshot('whatsapp-bot-help')
+    selenium.screenshot('whatsapp-bot-help-{0}'.format(attempt))
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
     selenium.find_by_xpath("//h4[text()='Group invites']")
-    selenium.screenshot('whatsapp-bot-answer')
+    selenium.screenshot('whatsapp-bot-answer-{0}'.format(attempt))
 
 def test_teardown(driver):
     driver.quit()
