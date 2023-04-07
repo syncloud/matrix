@@ -78,6 +78,7 @@ def test_whatsapp_bot(selenium, app_domain):
         try:
             whatsapp_bot(selenium, app_domain, attempt)
         except Exception as e:
+            selenium.screenshot('whatsapp-bot-error-{0}'.format(attempt))
             attempt += 1
             if attempt > attempts:
                 raise e
