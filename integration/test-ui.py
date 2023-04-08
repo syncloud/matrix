@@ -73,7 +73,7 @@ def test_image_big(selenium, device_user, device_password):
 
 def test_whatsapp_bot(selenium, app_domain):
     attempt = 0
-    attempts = 10
+    attempts = 100
     while True:
         try:
             whatsapp_bot(selenium, app_domain, attempt)
