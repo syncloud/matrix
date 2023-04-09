@@ -1,4 +1,5 @@
 import pytest
+import time
 from os.path import dirname, join
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -77,6 +78,7 @@ def test_whatsapp_bot(selenium, app_domain):
     while True:
         try:
             whatsapp_bot(selenium, app_domain, attempt)
+            break
         except Exception as e:
             selenium.screenshot('whatsapp-bot-error-{0}'.format(attempt))
             attempt += 1
@@ -91,6 +93,7 @@ def whatsapp_bot(selenium, app_domain, attempt):
     selenium.find_by_xpath("//input[@data-testid='invite-dialog-input']").send_keys(bot)
     selenium.screenshot('whatsapp-bot-invite-{0}'.format(attempt))
     selenium.find_by_xpath("//div[text()='Go']").click()
+    time.sleep(5)
     name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send a message')]")
     name.send_keys("help")
     selenium.screenshot('whatsapp-bot-help-{0}'.format(attempt))
