@@ -33,6 +33,13 @@ local build(arch, test_ui, dind) = [{
                 "./matrix/build.sh"
             ]
         },
+     {
+            name: "build sliding-sync",
+            image: "golang:" + go,
+            commands: [
+                "./sliding-sync/build.sh"
+            ]
+        },
     {
             name: "build whatsapp",
             image: "golang:" + go,
