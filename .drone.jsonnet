@@ -1,6 +1,6 @@
 local name = "matrix";
 local browser = "firefox";
-local go = "1.19.7-bullseye";
+local go = "1.20.11-bullseye";
 local version = "0.11.1";
 
 local build(arch, test_ui, dind) = [{
