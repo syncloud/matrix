@@ -114,6 +114,7 @@ class Installer:
         self.db.execute('postgres', DB_USER, "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASSWORD))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE matrix OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE whatsapp OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
+        self.db.execute('postgres', DB_USER, "CREATE DATABASE sliding-sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
         self.update_version()
         with open(self.install_file, 'w') as f:

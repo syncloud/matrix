@@ -44,7 +44,7 @@ local build(arch, test_ui, dind) = [{
             name: "build whatsapp",
             image: "golang:" + go,
             commands: [
-                "./build.sh"
+                "./whatsapp/build.sh"
             ]
         },
          {

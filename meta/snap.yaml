@@ -35,6 +35,15 @@ apps:
       - network-bind
     restart-condition: always
 
+  sliding-sync:
+    command: bin/service.sliding-sync.sh
+    user: matrix
+    daemon: simple
+    plugs:
+      - network
+      - network-bind
+    restart-condition: always
+
   psql:
     command: bin/psql.sh
 
