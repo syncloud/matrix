@@ -1,3 +1,3 @@
 export PSQL_PORT={{{ db_psql_port }}}
 export PSQL_DATABASE={{{ database_dir }}}
-export SYNCV3_DB=postgresql://matrix:matrix@/sliding-sync?host={{{ database_dir }}}&port={{{ db_psql_port }}}
+export SYNCV3_DB=postgresql://matrix:matrix@/sync?host={{{ database_dir }}}&port={{{ db_psql_port }}}
