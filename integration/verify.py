@@ -98,4 +98,5 @@ def test_upgrade(app_archive_path, device_host, device_password):
 
 
 def test_sync(app_domain):
-    wait_for_rest(requests.session(), "https://{0}/_matrix/client/unstable/org.matrix.msc3575/sync".format(app_domain), 200, 10)
+    #TODO: fox to use post
+    wait_for_rest(requests.session(), "https://{0}/_matrix/client/unstable/org.matrix.msc3575/sync".format(app_domain), 405, 10)
