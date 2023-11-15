@@ -108,7 +108,7 @@ class Installer:
         self.db.restore()
         self.prepare_storage()
         self.update_db()
-        self.set_sync_secret(self)
+        self.set_sync_secret()
         self.update_version()
 
 
@@ -119,7 +119,7 @@ class Installer:
         self.db.execute('postgres', DB_USER, "CREATE DATABASE whatsapp OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
-        self.set_sync_secret(self)
+        self.set_sync_secret()
         self.update_version()
         with open(self.install_file, 'w') as f:
             f.write('installed\n')
@@ -166,4 +166,3 @@ class Installer:
     def fix_permissions(self):
         check_output('chown -R {0}.{0} {1}'.format(USER_NAME, self.common_dir), shell=True)
         check_output('chown -R {0}.{0} {1}/'.format(USER_NAME, self.data_dir), shell=True)
-
