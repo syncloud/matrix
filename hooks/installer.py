@@ -44,6 +44,7 @@ class Installer:
         self.install_file = join(self.common_dir, 'installed')
         self.new_version = join(self.app_dir, 'version')
         self.current_version = join(self.data_dir, 'version')
+        self.sync_secret_file = join(self.data_dir, 'sync.secret')
 
     def install_config(self):
 
@@ -118,6 +119,8 @@ class Installer:
         self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
         self.update_version()
+        with open(self.sync_secret_file, 'w') as f:
+            f.write(uuid.uuid4().hex)
         with open(self.install_file, 'w') as f:
             f.write('installed\n')
         
