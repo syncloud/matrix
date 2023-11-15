@@ -106,6 +106,7 @@ class Installer:
     def upgrade(self):
         self.db.restore()
         self.prepare_storage()
+        self.update_db()
         self.update_version()
 
 
@@ -120,6 +121,13 @@ class Installer:
         with open(self.install_file, 'w') as f:
             f.write('installed\n')
         
+
+    def update_db(self):
+        try:
+            self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
+        except Exception as e:
+            self.log.info("skipping existimg db: " + e.output.decode())
+
 
     def update_version(self):
         shutil.copy(self.new_version, self.current_version)
