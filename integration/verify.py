@@ -98,6 +98,6 @@ def test_upgrade(app_archive_path, device_host, device_password):
 
 
 def test_sync(app_domain):
-    response = requests.get("https://{0}/_matrix/client/unstable/org.matrix.msc3575/sync".format(app_domain))
+    response = requests.get("https://{0}/_matrix/client/unstable/org.matrix.msc3575/sync".format(app_domain), verify=False)
     assert response.status_code == 200, response.text
 
