@@ -125,7 +125,7 @@ class Installer:
             f.write('installed\n')
         
     def set_sync_secret(self):
-        if not path.isfile(self.install_file):
+        if not path.isfile(self.sync_secret_file):
             with open(self.sync_secret_file, 'w') as f:
                 f.write(uuid.uuid4().hex)
 
