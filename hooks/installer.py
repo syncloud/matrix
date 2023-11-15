@@ -108,6 +108,7 @@ class Installer:
         self.db.restore()
         self.prepare_storage()
         self.update_db()
+        self.set_sync_secret(self)
         self.update_version()
 
 
@@ -118,12 +119,15 @@ class Installer:
         self.db.execute('postgres', DB_USER, "CREATE DATABASE whatsapp OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
+        self.set_sync_secret(self)
         self.update_version()
-        with open(self.sync_secret_file, 'w') as f:
-            f.write(uuid.uuid4().hex)
         with open(self.install_file, 'w') as f:
             f.write('installed\n')
         
+    def set_sync_secret(self):
+        if not path.isfile(self.install_file):
+            with open(self.sync_secret_file, 'w') as f:
+                f.write(uuid.uuid4().hex)
 
     def update_db(self):
         try:
