@@ -44,6 +44,7 @@ class Installer:
         self.install_file = join(self.common_dir, 'installed')
         self.new_version = join(self.app_dir, 'version')
         self.current_version = join(self.data_dir, 'version')
+        self.sync_secret_file = join(self.data_dir, 'sync.secret')
 
     def install_config(self):
 
@@ -106,6 +107,8 @@ class Installer:
     def upgrade(self):
         self.db.restore()
         self.prepare_storage()
+        self.update_db()
+        self.set_sync_secret()
         self.update_version()
 
 
@@ -114,11 +117,24 @@ class Installer:
         self.db.execute('postgres', DB_USER, "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASSWORD))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE matrix OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE whatsapp OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
+        self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
+        self.set_sync_secret()
         self.update_version()
         with open(self.install_file, 'w') as f:
             f.write('installed\n')
         
+    def set_sync_secret(self):
+        if not path.isfile(self.sync_secret_file):
+            with open(self.sync_secret_file, 'w') as f:
+                f.write(uuid.uuid4().hex)
+
+    def update_db(self):
+        try:
+            self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
+        except Exception as e:
+            self.log.info("skipping existimg db: " + e.output.decode())
+
 
     def update_version(self):
         shutil.copy(self.new_version, self.current_version)
@@ -150,4 +166,3 @@ class Installer:
     def fix_permissions(self):
         check_output('chown -R {0}.{0} {1}'.format(USER_NAME, self.common_dir), shell=True)
         check_output('chown -R {0}.{0} {1}/'.format(USER_NAME, self.data_dir), shell=True)
-

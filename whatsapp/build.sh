@@ -3,13 +3,13 @@
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
-BUILD_DIR=${DIR}/build/snap
+BUILD_DIR=${DIR}/../build/snap
 mkdir -p $BUILD_DIR/bin
 
-cd ${DIR}/build
+cd ${DIR}/../build
 cat <<EOT >> go.work
 
-go 1.19
+go 1.20
 
 use (
     ./whatsapp

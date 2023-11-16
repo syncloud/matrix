@@ -48,9 +48,17 @@ tar xf ${MAUTRIX_GO}.tar.gz
 rm ${MAUTRIX_GO}.tar.gz
 mv go-${MAUTRIX_GO} mautrix-go
 
+cd ${DIR}/build
 #wget https://github.com/cyberb/whatsapp/archive/refs/heads/master.tar.gz
 wget https://github.com/mautrix/whatsapp/archive/refs/heads/master.tar.gz
 tar -xf master.tar.gz
 rm -rf master.tar.gz
 mv whatsapp-master whatsapp
+
+cd ${DIR}/build
+wget https://github.com/cyberb/sliding-sync/archive/refs/heads/master.tar.gz
+#wget https://github.com/matrix-org/sliding-sync/archive/refs/heads/master.tar.gz
+tar -xf master.tar.gz
+rm -rf master.tar.gz
+mv sliding-sync-main sliding-sync
 

@@ -1,6 +1,6 @@
 local name = "matrix";
 local browser = "firefox";
-local go = "1.19.7-bullseye";
+local go = "1.20.11-bullseye";
 local version = "0.11.1";
 
 local build(arch, test_ui, dind) = [{
@@ -33,11 +33,18 @@ local build(arch, test_ui, dind) = [{
                 "./matrix/build.sh"
             ]
         },
+     {
+            name: "build sliding-sync",
+            image: "golang:" + go,
+            commands: [
+                "./sliding-sync/build.sh"
+            ]
+        },
     {
             name: "build whatsapp",
             image: "golang:" + go,
             commands: [
-                "./build.sh"
+                "./whatsapp/build.sh"
             ]
         },
          {
