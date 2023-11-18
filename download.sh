@@ -56,8 +56,8 @@ rm -rf master.tar.gz
 mv whatsapp-master whatsapp
 
 cd ${DIR}/build
-wget https://github.com/cyberb/sliding-sync/archive/refs/heads/master.tar.gz
-#wget https://github.com/matrix-org/sliding-sync/archive/refs/heads/master.tar.gz
+#wget https://github.com/cyberb/sliding-sync/archive/refs/heads/master.tar.gz
+wget https://github.com/matrix-org/sliding-sync/archive/refs/heads/master.tar.gz
 tar -xf master.tar.gz
 rm -rf master.tar.gz
 mv sliding-sync-main sliding-sync
