@@ -6,16 +6,16 @@ cd ${DIR}
 BUILD_DIR=${DIR}/../build/snap
 mkdir -p $BUILD_DIR/bin
 
-cd ${DIR}/../build
-cat <<EOT >> go.work
+cd ${DIR}/../build/whatsapp
+#cat <<EOT >> go.work
 
-go 1.20
+#go 1.20
 
-use (
-    ./whatsapp
-    ./mautrix-go
-)
-EOT
+#use (
+#    ./whatsapp
+#    ./mautrix-go
+#)
+#EOT
 
 GO_LDFLAGS="-s -w -linkmode external -extldflags -static -X main.Tag=0 -X main.Commit=0 -X 'main.BuildTime=`date '+%b %_d %Y, %H:%M:%S'`'"
-go build -tags nocrypto -ldflags "$GO_LDFLAGS" -o $BUILD_DIR/bin/whatsapp ./whatsapp
+go build -tags nocrypto -ldflags "$GO_LDFLAGS" -o $BUILD_DIR/bin/whatsapp .
