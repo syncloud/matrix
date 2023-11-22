@@ -82,7 +82,8 @@ class Installer:
 
     def register_telegram(self):
         check_output([
-            '{0}/python/bin/python -m mautrix_telegram'.format(self.app_dir),
+            '{0}/python/bin/python'.format(self.app_dir),
+            '-m', 'mautrix_telegram',
             '-g',
             '-c', '{0}/telegram.yaml'.format(self.config_dir),
             '-r', '{0}'.format(self.telegram_registration_config)
