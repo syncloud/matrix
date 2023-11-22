@@ -45,6 +45,7 @@ class Installer:
         self.new_version = join(self.app_dir, 'version')
         self.current_version = join(self.data_dir, 'version')
         self.sync_secret_file = join(self.data_dir, 'sync.secret')
+        self.telegram_registration_config = '{0}/telegram-registration.yaml'.format(self.config_dir)
 
     def install_config(self):
 
@@ -68,6 +69,7 @@ class Installer:
         fs.makepath(join(self.common_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
         self.register_whatsapp()
+        self.register_telegram()
         self.fix_permissions()
 
     def register_whatsapp(self):
@@ -76,6 +78,14 @@ class Installer:
             '-g',
             '-c', '{0}/whatsapp.yaml'.format(self.config_dir),
             '-r', '{0}/whatsapp-registration.yaml'.format(self.config_dir)
+        ])
+
+    def register_telegram(self):
+        check_output([
+            '{0}/python/bin/python -m mautrix_telegram'.format(self.app_dir),
+            '-g',
+            '-c', '{0}/telegram.yaml'.format(self.config_dir),
+            '-r', '{0}'.format(self.telegram_registration_config)
         ])
 
     def install(self):
@@ -133,8 +143,7 @@ class Installer:
         try:
             self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         except Exception as e:
-            self.log.info("skipping existimg db: " + e.output.decode())
-
+            self.log.info("skipping existing db: " + str(e))
 
     def update_version(self):
         shutil.copy(self.new_version, self.current_version)
