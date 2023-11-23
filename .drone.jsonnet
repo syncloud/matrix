@@ -47,6 +47,13 @@ local build(arch, test_ui, dind) = [{
                 "./whatsapp/build.sh"
             ]
         },
+    {
+            name: "build telegram",
+            image: "golang:" + go,
+            commands: [
+                "./telegram/build.sh"
+            ]
+        },
          {
             name: "package postgresql",
             image: "docker:" + dind,

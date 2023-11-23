@@ -564,8 +564,8 @@ bridge:
 # Telegram config
 telegram:
   # Get your own API keys at https://my.telegram.org/apps
-  api_id: 12345
-  api_hash: tjyd5yge35lbodk1xwzw2jstp90k55qz
+  api_id: {TELEGRAM_API_ID}
+  api_hash: {TELEGRAM_API_HASH}
   # (Optional) Create your own bot at https://t.me/BotFather
   bot_token: disabled
 
