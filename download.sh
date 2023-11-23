@@ -62,3 +62,9 @@ tar -xf master.tar.gz
 rm -rf master.tar.gz
 mv sliding-sync-main sliding-sync
 
+cd ${DIR}/build
+wget https://github.com/cyberb/mautrix-python/archive/refs/heads/master.tar.gz
+tar -xf master.tar.gz
+rm -rf master.tar.gz
+mv mautrix-python-master mautrix-python
+
