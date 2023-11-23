@@ -3,7 +3,7 @@
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
-TEMPLATE=${DIR}/../config/telegram.yaml.template
+TEMPLATE=${DIR}/../config/telegram.template.yaml
 CONFIG=${DIR}/../config/telegram.yaml
 
 cp $TEMPLATE $CONFIG

@@ -60,6 +60,7 @@ class Installer:
             'data_dir': self.data_dir,
             'db_psql_port': PSQL_PORT,
             'database_dir': self.db.database_dir,
+            'database_dir_escaped': self.db.database_dir.replace('/', '%2F'),
             'config_dir': self.config_dir,
             'domain': urls.get_app_domain_name(APP_NAME)
         }
@@ -106,14 +107,11 @@ class Installer:
         self.clear_version()
 
     def configure(self):
-        
         if path.isfile(self.install_file):
             self.upgrade()
         else:
             self.initialize()
-        
         storage.init_storage(APP_NAME, USER_NAME)
-        
 
     def upgrade(self):
         self.db.restore()
@@ -121,7 +119,6 @@ class Installer:
         self.update_db()
         self.set_sync_secret()
         self.update_version()
-
 
     def initialize(self):
         self.prepare_storage()
