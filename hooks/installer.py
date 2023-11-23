@@ -129,6 +129,7 @@ class Installer:
         self.db.execute('postgres', DB_USER, "CREATE DATABASE matrix OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE whatsapp OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
+        self.db.execute('postgres', DB_USER, "CREATE DATABASE telegram OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
         self.set_sync_secret()
         self.update_version()
@@ -143,6 +144,7 @@ class Installer:
     def update_db(self):
         try:
             self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
+            self.db.execute('postgres', DB_USER, "CREATE DATABASE telegram OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
         except Exception as e:
             self.log.info("skipping existing db: " + str(e))
 
