@@ -26,13 +26,13 @@ homeserver:
 # Changing these values requires regeneration of the registration.
 appservice:
   # The address that the homeserver can use to connect to this appservice.
-  address: unix:///var/snap/matrix/current/whatsapp.socket
+  address: unix:///var/snap/matrix/current/telegram.socket
   # When using https:// the TLS certificate and key files for the address.
   tls_cert: false
   tls_key: false
 
   # The hostname and port where this appservice should listen.
-  hostname: /var/snap/matrix/current/whatsapp.socket
+  hostname: /var/snap/matrix/current/telegram.socket
   port: 0
   # The maximum body size of appservice API requests (from the homeserver) in mebibytes
   # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
@@ -42,7 +42,7 @@ appservice:
   # Format examples:
   #   SQLite:   sqlite:filename.db
   #   Postgres: postgres://username:password@hostname/dbname
-  database: postgresql://matrix:matrix@{{{ database_dir_escaped }}}/telegram?port={{{ db_psql_port }}}
+  database: postgresql:///telegram?host={{{ database_dir }}}&user=matrix&password=matrix&port={{{ db_psql_port }}}
   # Additional arguments for asyncpg.create_pool() or sqlite3.connect()
   # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
   # https://docs.python.org/3/library/sqlite3.html#sqlite3.connect

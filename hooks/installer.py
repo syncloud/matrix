@@ -60,7 +60,6 @@ class Installer:
             'data_dir': self.data_dir,
             'db_psql_port': PSQL_PORT,
             'database_dir': self.db.database_dir,
-            'database_dir_escaped': self.db.database_dir.replace('/', '%2F'),
             'config_dir': self.config_dir,
             'domain': urls.get_app_domain_name(APP_NAME)
         }
