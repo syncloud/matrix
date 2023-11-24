@@ -7,8 +7,8 @@ TEMPLATE=${DIR}/../config/telegram.template.yaml
 CONFIG=${DIR}/../config/telegram.yaml
 
 cp $TEMPLATE $CONFIG
-sed -i "s/$TELEGRAM_API_ID/{TELEGRAM_API_ID}/g" $CONFIG
-sed -i "s/$TELEGRAM_API_HASH/{TELEGRAM_API_HASH}/g" $CONFIG
+sed -i "s/{TELEGRAM_API_ID}/$TELEGRAM_API_ID/g" $CONFIG
+sed -i "s/{TELEGRAM_API_HASH}/$TELEGRAM_API_HASH/g" $CONFIG
 
 BUILD_DIR=${DIR}/../build/snap
 cd ${DIR}/../build/mautrix-python
