@@ -90,7 +90,7 @@ def test_bridge_bot(selenium, app_domain, bridge):
             attempt += 1
             if attempt > attempts:
                 raise e
-            
+
 
 def bridge_bot(bridge, selenium, app_domain, attempt):
     selenium.find_by_xpath("//div[@aria-label='Add']").click()

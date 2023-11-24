@@ -7,7 +7,7 @@ from syncloudlib import logger
 
 class Database:
 
-    def __init__(self, app_dir, data_dir, config_path, port):
+    def __init__(self, app_dir, data_dir, config_path, port, user):
         self.log = logger.get_logger('database')
         self.app_dir = app_dir
         self.config_path = config_path
@@ -18,6 +18,7 @@ class Database:
         self.new_major_version_file = join(self.app_dir, 'db.major.version')
         self.backup_file = join(self.data_dir, 'database.dump')
         self.database_host = '{0}:{1}'.format(self.database_dir, port)
+        self.user = user
 
     def get_database_path(self):
         return self.database_dir
@@ -35,8 +36,8 @@ class Database:
     def init_config(self):
         shutil.copy(self.postgresql_config, self.database_dir)
 
-    def execute(self, database, user, sql):
-        self.run('snap run matrix.psql -U {0} -d {1} -c "{2}"'.format(user, database, sql))
+    def execute(self, database, sql):
+        self.run('snap run matrix.psql -U {0} -d {1} -c "{2}"'.format(self.user, database, sql))
 
     def restore(self):
         self.run('snap run matrix.psql -f {0} postgres'.format(self.backup_file))
@@ -44,6 +45,14 @@ class Database:
     def backup(self):
         self.run('snap run matrix.pgdumpall -f {0}'.format(self.backup_file))
         shutil.copy(self.new_major_version_file, self.old_major_version_file)
+
+    def create_db_if_missing(self, db):
+        try:
+            self.execute(db, "select 1")
+            self.log.info(f'database "{db}" already exists')
+        except Exception:
+            self.log.info(f'creating database: "{db}"')
+            self.execute('postgres', self.user, f"CREATE DATABASE sync OWNER {self.user} TEMPLATE template0 ENCODING 'UTF8'")
 
     def run(self, cmd):
         try:
