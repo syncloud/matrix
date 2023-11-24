@@ -155,6 +155,7 @@ app_service_api:
   # Appservice configuration files to load into this homeserver.
   config_files:
    - /var/snap/matrix/current/config/whatsapp-registration.yaml
+   - /var/snap/matrix/current/config/telegram-registration.yaml
 
 # Configuration for the Client API.
 client_api:
