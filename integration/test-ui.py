@@ -105,7 +105,7 @@ def bridge_bot(bridge, selenium, app_domain, attempt):
     selenium.screenshot('{0}-bot-help-{1}'.format(bridge, attempt))
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
     selenium.screenshot('{0}-bot-help-sent-{1}'.format(bridge, attempt))
-    selenium.find_by_xpath("//h4[text()='Group invites']")
+    selenium.find_by_xpath("//h4[text()='Administration']")
     selenium.screenshot('{0}-bot-answer-{1}'.format(bridge, attempt))
 
 
