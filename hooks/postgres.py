@@ -52,7 +52,7 @@ class Database:
             self.log.info(f'database "{db}" already exists')
         except Exception:
             self.log.info(f'creating database: "{db}"')
-            self.execute('postgres', f"CREATE DATABASE sync OWNER {self.user} TEMPLATE template0 ENCODING 'UTF8'")
+            self.execute('postgres', f"CREATE DATABASE {db} OWNER {self.user} TEMPLATE template0 ENCODING 'UTF8'")
 
     def run(self, cmd):
         try:
