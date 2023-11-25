@@ -38,6 +38,7 @@ def test_login(selenium, device_user, device_password):
     selenium.find_by_xpath("//span[contains(.,'Welcome user')]")
     selenium.screenshot('main')
 
+
 def test_room(selenium, device_user, device_password):
     selenium.find_by_xpath("//div[text()='Dismiss']").click()
     selenium.find_by_xpath("//div[@aria-label='Add room']").click()
@@ -47,6 +48,7 @@ def test_room(selenium, device_user, device_password):
     selenium.find_by_xpath("//button[text()='Create room']").click()
     selenium.screenshot('room')
 
+
 def test_message(selenium, device_user, device_password):
     selenium.find_by_xpath("//div[@title='testroom']").click()
     name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send an encrypted message')]")
@@ -55,6 +57,7 @@ def test_message(selenium, device_user, device_password):
     selenium.find_by_xpath("//div[text()='Later']").click()
     selenium.screenshot('message')
 
+
 def test_image(selenium, device_user, device_password):
     file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
@@ -62,6 +65,7 @@ def test_image(selenium, device_user, device_password):
     selenium.find_by_xpath("//button[text()='Upload']").click()
     assert not selenium.exists_by(By.XPATH, "//h2[contains(.,'Upload Failed')]")
     selenium.screenshot('image')
+
 
 def test_image_big(selenium, device_user, device_password):
     file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
@@ -72,35 +76,38 @@ def test_image_big(selenium, device_user, device_password):
     assert not selenium.exists_by(By.XPATH, "//h2[contains(.,'Upload Failed')]")
     selenium.screenshot('image-big')
 
-def test_whatsapp_bot(selenium, app_domain):
+
+@pytest.mark.parametrize("bridge", ["whatsapp", "telegram"])
+def test_bridge_bot(selenium, app_domain, bridge):
     attempt = 0
-    attempts = 100
+    attempts = 20
     while True:
         try:
-            whatsapp_bot(selenium, app_domain, attempt)
+            bridge_bot(bridge, selenium, app_domain, attempt)
             break
         except Exception as e:
-            selenium.screenshot('whatsapp-bot-error-{0}'.format(attempt))
+            selenium.screenshot('{0}-bot-error-{1}'.format(bridge, attempt))
             attempt += 1
             if attempt > attempts:
                 raise e
-            
 
-def whatsapp_bot(selenium, app_domain, attempt):
+
+def bridge_bot(bridge, selenium, app_domain, attempt):
     selenium.find_by_xpath("//div[@aria-label='Add']").click()
     selenium.find_by_xpath("//div[@aria-label='Start new chat']").click()
-    bot = '@whatsappbot:{0}'.format(app_domain)
+    bot = '@{0}bot:{1}'.format(bridge, app_domain)
     selenium.find_by_xpath("//input[@data-testid='invite-dialog-input']").send_keys(bot)
-    selenium.screenshot('whatsapp-bot-invite-{0}'.format(attempt))
+    selenium.screenshot('{0}-bot-invite-{1}'.format(bridge, attempt))
     selenium.find_by_xpath("//div[text()='Go']").click()
     time.sleep(5)
     name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send a message')]")
     name.send_keys("help")
-    selenium.screenshot('whatsapp-bot-help-{0}'.format(attempt))
+    selenium.screenshot('{0}-bot-help-{1}'.format(bridge, attempt))
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
-    selenium.screenshot('whatsapp-bot-help-sent-{0}'.format(attempt))
-    selenium.find_by_xpath("//h4[text()='Group invites']")
-    selenium.screenshot('whatsapp-bot-answer-{0}'.format(attempt))
+    selenium.screenshot('{0}-bot-help-sent-{1}'.format(bridge, attempt))
+    selenium.find_by_xpath("//h4[text()='Administration']")
+    selenium.screenshot('{0}-bot-answer-{1}'.format(bridge, attempt))
+
 
 def test_teardown(driver):
     driver.quit()

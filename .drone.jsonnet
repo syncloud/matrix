@@ -73,7 +73,21 @@ local build(arch, test_ui, dind) = [{
                 }
             ]
         },
-   
+{
+            name: "build telegram",
+            image: "debian:buster-slim",
+            environment: {
+                TELEGRAM_API_ID: {
+                    from_secret: "TELEGRAM_API_ID"
+                },
+                TELEGRAM_API_HASH: {
+                    from_secret: "TELEGRAM_API_HASH"
+                }
+            },
+            commands: [
+                "./telegram/build.sh"
+            ]
+        },   
         {
             name: "package",
             image: "debian:buster-slim",
@@ -287,5 +301,4 @@ local build(arch, test_ui, dind) = [{
   }];
 
 build("amd64", true, "20.10.21-dind") +
-build("arm64", false, "19.03.8-dind") +
-build("arm", false, "19.03.8-dind")
+build("arm64", false, "19.03.8-dind")

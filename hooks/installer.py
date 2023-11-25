@@ -40,11 +40,12 @@ class Installer:
         self.common_dir = paths.get_data_dir(APP_NAME)
         self.data_dir = join('/var/snap', APP_NAME, 'current')
         self.config_dir = join(self.data_dir, 'config')
-        self.db = Database(self.app_dir, self.data_dir, self.config_dir, PSQL_PORT)
+        self.db = Database(self.app_dir, self.data_dir, self.config_dir, PSQL_PORT, DB_USER)
         self.install_file = join(self.common_dir, 'installed')
         self.new_version = join(self.app_dir, 'version')
         self.current_version = join(self.data_dir, 'version')
         self.sync_secret_file = join(self.data_dir, 'sync.secret')
+        self.telegram_registration_config = '{0}/telegram-registration.yaml'.format(self.config_dir)
 
     def install_config(self):
 
@@ -68,6 +69,7 @@ class Installer:
         fs.makepath(join(self.common_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
         self.register_whatsapp()
+        self.register_telegram()
         self.fix_permissions()
 
     def register_whatsapp(self):
@@ -78,8 +80,20 @@ class Installer:
             '-r', '{0}/whatsapp-registration.yaml'.format(self.config_dir)
         ])
 
+    def register_telegram(self):
+        check_output([
+            '{0}/python/bin/python'.format(self.app_dir),
+            '-m', 'mautrix_telegram',
+            '-g',
+            '-c', '{0}/telegram.yaml'.format(self.config_dir),
+            '-r', '{0}'.format(self.telegram_registration_config)
+        ])
+
     def install(self):
-        check_output('{0}/matrix/bin/generate-keys --private-key /var/snap/matrix/current/private_key.pem'.format(self.app_dir), shell=True)
+        check_output([
+            f'{self.app_dir}/matrix/bin/generate-keys',
+            '--private-key', '/var/snap/matrix/current/private_key.pem'
+        ])
         self.install_config()
         self.db.init()
         self.db.init_config()
@@ -95,30 +109,24 @@ class Installer:
         self.clear_version()
 
     def configure(self):
-        
         if path.isfile(self.install_file):
             self.upgrade()
         else:
             self.initialize()
-        
         storage.init_storage(APP_NAME, USER_NAME)
-        
 
     def upgrade(self):
         self.db.restore()
         self.prepare_storage()
-        self.update_db()
+        self.create_db()
         self.set_sync_secret()
         self.update_version()
 
-
     def initialize(self):
         self.prepare_storage()
-        self.db.execute('postgres', DB_USER, "ALTER USER {0} WITH PASSWORD '{1}';".format(DB_USER, DB_PASSWORD))
-        self.db.execute('postgres', DB_USER, "CREATE DATABASE matrix OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
-        self.db.execute('postgres', DB_USER, "CREATE DATABASE whatsapp OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
-        self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
-        self.db.execute('postgres', DB_USER, "GRANT CREATE ON SCHEMA public TO {0};".format(DB_USER))
+        self.db.execute('postgres', f"ALTER USER {DB_USER} WITH PASSWORD '{DB_PASSWORD}'")
+        self.create_db()
+        self.db.execute('postgres', f"GRANT CREATE ON SCHEMA public TO {DB_USER}")
         self.set_sync_secret()
         self.update_version()
         with open(self.install_file, 'w') as f:
@@ -129,12 +137,11 @@ class Installer:
             with open(self.sync_secret_file, 'w') as f:
                 f.write(uuid.uuid4().hex)
 
-    def update_db(self):
-        try:
-            self.db.execute('postgres', DB_USER, "CREATE DATABASE sync OWNER {0} TEMPLATE template0 ENCODING 'UTF8';".format(DB_USER))
-        except Exception as e:
-            self.log.info("skipping existimg db: " + e.output.decode())
-
+    def create_db(self):
+        self.db.create_db_if_missing('matrix')
+        self.db.create_db_if_missing('sync')
+        self.db.create_db_if_missing('whatsapp')
+        self.db.create_db_if_missing('telegram')
 
     def update_version(self):
         shutil.copy(self.new_version, self.current_version)
