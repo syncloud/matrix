@@ -4,5 +4,5 @@ LIBS=$(echo ${DIR}/lib/*-linux-gnu*)
 LIBS=$LIBS:$(echo ${DIR}/lib/*-linux-gnu*)
 LIBS=$LIBS:$(echo ${DIR}/usr/lib/*-linux-gnu*)
 LIBS=$LIBS:$(echo ${DIR}/usr/local/lib)
-export MAGIC=/snap/matrix/current/python/usr/share/misc/magic.mgc
-${DIR}/lib/*-linux*/ld-*.so --library-path $LIBS ${DIR}/usr/local/bin/python3 "$@"
+export MAGIC=${DIR}/usr/share/misc/magic.mgc
+exec ${DIR}/lib/*-linux*/ld-*.so --library-path $LIBS ${DIR}/usr/local/bin/python3 "$@"
