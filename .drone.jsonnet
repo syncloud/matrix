@@ -28,6 +28,19 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
+        name: 'build signald',
+        image: 'docker:' + dind,
+        commands: [
+          './signal/build.sh',
+        ],
+        volumes: [
+          {
+            name: 'dockersock',
+            path: '/var/run',
+          },
+        ],
+      },
+      {
         name: 'build matrix',
         image: 'golang:' + go,
         commands: [
