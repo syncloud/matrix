@@ -14,4 +14,4 @@ cd ${BUILD_DIR}
 docker export signal -o app.tar
 tar xf app.tar
 rm -rf app.tar
-cp ${DIR}/java ${BUILD_DIR}/bin/
+cp ${DIR}/java.sh ${BUILD_DIR}/bin/
