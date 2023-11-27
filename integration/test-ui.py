@@ -80,7 +80,7 @@ def test_image_big(selenium, device_user, device_password):
 @pytest.mark.parametrize("bridge", ["whatsapp", "telegram", "signal"])
 def test_bridge_bot(selenium, app_domain, bridge):
     attempt = 0
-    attempts = 20
+    attempts = 10
     while True:
         try:
             bridge_bot(bridge, selenium, app_domain, attempt)
