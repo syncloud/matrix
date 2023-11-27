@@ -156,6 +156,7 @@ app_service_api:
   config_files:
    - /var/snap/matrix/current/config/whatsapp-registration.yaml
    - /var/snap/matrix/current/config/telegram-registration.yaml
+   - /var/snap/matrix/current/config/signal-registration.yaml
 
 # Configuration for the Client API.
 client_api:
