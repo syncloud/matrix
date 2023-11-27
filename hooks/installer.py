@@ -143,6 +143,7 @@ class Installer:
         self.db.create_db_if_missing('whatsapp')
         self.db.create_db_if_missing('telegram')
         self.db.create_db_if_missing('signal')
+        self.db.create_db_if_missing('signald')
 
     def update_version(self):
         shutil.copy(self.new_version, self.current_version)
