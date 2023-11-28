@@ -45,7 +45,6 @@ class Installer:
         self.new_version = join(self.app_dir, 'version')
         self.current_version = join(self.data_dir, 'version')
         self.sync_secret_file = join(self.data_dir, 'sync.secret')
-        self.telegram_registration_config = '{0}/telegram-registration.yaml'.format(self.config_dir)
 
     def install_config(self):
 
@@ -69,7 +68,8 @@ class Installer:
         fs.makepath(join(self.common_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
         self.register_whatsapp()
-        self.register_telegram()
+        self.register_python_bridge('telegram')
+        self.register_python_bridge('signal')
         self.fix_permissions()
 
     def register_whatsapp(self):
@@ -80,13 +80,13 @@ class Installer:
             '-r', '{0}/whatsapp-registration.yaml'.format(self.config_dir)
         ])
 
-    def register_telegram(self):
+    def register_python_bridge(self, bridge):
         check_output([
             '{0}/python/bin/python'.format(self.app_dir),
-            '-m', 'mautrix_telegram',
+            '-m', f'mautrix_{bridge}',
             '-g',
-            '-c', '{0}/telegram.yaml'.format(self.config_dir),
-            '-r', '{0}'.format(self.telegram_registration_config)
+            '-c', f'{self.config_dir}/{bridge}.yaml',
+            '-r', f'{self.config_dir}/{bridge}-registration.yaml'
         ])
 
     def install(self):
@@ -142,6 +142,8 @@ class Installer:
         self.db.create_db_if_missing('sync')
         self.db.create_db_if_missing('whatsapp')
         self.db.create_db_if_missing('telegram')
+        self.db.create_db_if_missing('signal')
+        self.db.create_db_if_missing('signald')
 
     def update_version(self):
         shutil.copy(self.new_version, self.current_version)
