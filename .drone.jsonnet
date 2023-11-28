@@ -55,12 +55,16 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
-        name: 'build whatsapp',
+        name: 'build slack',
         image: 'golang:' + go,
         commands: [
-          './whatsapp/build.sh',
+          './slack/build.sh',
         ],
       },
+      {
+        name: 'build whatsapp',
+        image: 'golang:' + go,                                  commands: [
+          './whatsapp/build.sh',                                ],                                                    },
       {
         name: 'package postgresql',
         image: 'docker:' + dind,
