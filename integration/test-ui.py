@@ -90,6 +90,8 @@ def test_bridge_bot(selenium, app_domain, bridge):
             attempt += 1
             if attempt > attempts:
                 raise e
+            else:
+                time.sleep(5)
 
 
 def bridge_bot(bridge, selenium, app_domain, attempt):
