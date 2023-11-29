@@ -77,7 +77,7 @@ def test_image_big(selenium, device_user, device_password):
     selenium.screenshot('image-big')
 
 
-@pytest.mark.parametrize("bridge", ["whatsapp", "telegram", "signal"])
+@pytest.mark.parametrize("bridge", ["whatsapp", "telegram", "signal", "slack"])
 def test_bridge_bot(selenium, app_domain, bridge):
     attempt = 0
     attempts = 10

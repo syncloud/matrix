@@ -67,17 +67,18 @@ class Installer:
         fs.makepath(join(self.common_dir, 'log'))
         fs.makepath(join(self.common_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
-        self.register_whatsapp()
+        self.register_go_bridge('whatsapp')
+        self.register_go_bridge('slack')
         self.register_python_bridge('telegram')
         self.register_python_bridge('signal')
         self.fix_permissions()
 
-    def register_whatsapp(self):
+    def register_go_bridge(self, bridge):
         check_output([
-            '{0}/bin/whatsapp'.format(self.app_dir),
+            f'{self.app_dir}/bin/{bridge}',
             '-g',
-            '-c', '{0}/whatsapp.yaml'.format(self.config_dir),
-            '-r', '{0}/whatsapp-registration.yaml'.format(self.config_dir)
+            '-c', f'{self.config_dir}/{bridge}.yaml',
+            '-r', f'{self.config_dir}/{bridge}-registration.yaml'
         ])
 
     def register_python_bridge(self, bridge):
@@ -144,6 +145,7 @@ class Installer:
         self.db.create_db_if_missing('telegram')
         self.db.create_db_if_missing('signal')
         self.db.create_db_if_missing('signald')
+        self.db.create_db_if_missing('slack')
 
     def update_version(self):
         shutil.copy(self.new_version, self.current_version)
