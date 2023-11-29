@@ -29,10 +29,10 @@ homeserver:
 # Changing these values requires regeneration of the registration.
 appservice:
   # The address that the homeserver can use to connect to this appservice.
-  address: unix:///var/snap/matrix/current/whatsapp.socket
+  address: unix:///var/snap/matrix/current/slack.socket
 
   # The hostname and port where this appservice should listen.
-  hostname: /var/snap/matrix/current/whatsapp.socket
+  hostname: /var/snap/matrix/current/slack.socket
   port: 0
 
   # Database config.
