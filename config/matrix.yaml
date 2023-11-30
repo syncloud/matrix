@@ -158,6 +158,7 @@ app_service_api:
    - /var/snap/matrix/current/config/telegram-registration.yaml
    - /var/snap/matrix/current/config/signal-registration.yaml
    - /var/snap/matrix/current/config/slack-registration.yaml
+   - /var/snap/matrix/current/config/discord-registration.yaml
 
 # Configuration for the Client API.
 client_api:

@@ -48,25 +48,35 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
-        name: 'build sliding-sync',
+        name: 'sliding-sync',
         image: 'golang:' + go,
         commands: [
           './sliding-sync/build.sh',
         ],
       },
       {
-        name: 'build slack',
+        name: 'slack',
         image: 'golang:' + go,
         commands: [
           './slack/build.sh',
         ],
       },
       {
-        name: 'build whatsapp',
-        image: 'golang:' + go,                                  commands: [
-          './whatsapp/build.sh',                                ],                                                    },
+        name: 'discord',
+        image: 'golang:' + go,
+        commands: [
+          './discord/build.sh',
+        ],
+      },
       {
-        name: 'package postgresql',
+        name: 'whatsapp',
+        image: 'golang:' + go,
+        commands: [
+          './whatsapp/build.sh',
+        ],
+      },
+      {
+        name: 'postgresql',
         image: 'docker:' + dind,
         commands: [
           './postgresql/build.sh',
@@ -79,7 +89,7 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
-        name: 'package python',
+        name: 'python',
         image: 'docker:' + dind,
         commands: [
           './python/build.sh',
@@ -92,7 +102,7 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
-        name: 'build telegram',
+        name: 'telegram',
         image: 'debian:buster-slim',
         environment: {
           TELEGRAM_API_ID: {
@@ -115,7 +125,7 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
-        name: 'test-integration-buster',
+        name: 'test',
         image: 'python:3.8-slim-buster',
         commands: [
           'APP_ARCHIVE_PATH=$(realpath $(cat package.name))',
@@ -145,7 +155,7 @@ local build(arch, test_ui, dind) = [
              ],
            },
            {
-             name: 'test-ui-desktop-buster',
+             name: 'test-ui',
              image: 'python:3.8-slim-buster',
              commands: [
                'cd integration',
