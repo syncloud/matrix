@@ -73,3 +73,9 @@ wget https://github.com/mautrix/slack/archive/refs/heads/main.tar.gz
 tar -xf main.tar.gz
 rm -rf main.tar.gz
 mv slack-main slack
+
+cd ${DIR}/build
+wget https://github.com/mautrix/discord/archive/refs/heads/main.tar.gz
+tar -xf main.tar.gz
+rm -rf main.tar.gz
+mv discord-main discord

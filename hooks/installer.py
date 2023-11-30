@@ -69,6 +69,7 @@ class Installer:
         fs.makepath(join(self.data_dir, 'data'))
         self.register_go_bridge('whatsapp')
         self.register_go_bridge('slack')
+        self.register_go_bridge('discord')
         self.register_python_bridge('telegram')
         self.register_python_bridge('signal')
         self.fix_permissions()
@@ -146,6 +147,7 @@ class Installer:
         self.db.create_db_if_missing('signal')
         self.db.create_db_if_missing('signald')
         self.db.create_db_if_missing('slack')
+        self.db.create_db_if_missing('discord')
 
     def update_version(self):
         shutil.copy(self.new_version, self.current_version)
