@@ -1,5 +1,6 @@
 local name = 'matrix';
 local browser = 'firefox';
+local nginx = '1.24.0';
 local go = '1.22.6-bullseye';
 local platform = '24.05';
 local selenium = '4.21.0-20240517';
