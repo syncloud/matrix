@@ -24,10 +24,10 @@ cd ${DIR}/../build
 #mv go-${MAUTRIX_GO} mautrix-go
 
 #wget https://github.com/cyberb/whatsapp/archive/refs/heads/master.tar.gz
-wget https://github.com/mautrix/whatsapp/archive/refs/heads/master.tar.gz
-tar -xf master.tar.gz
-rm -rf master.tar.gz
-cd whatsapp-master
+wget https://github.com/mautrix/whatsapp/archive/refs/heads/main.tar.gz
+tar -xf main.tar.gz
+rm -rf main.tar.gz
+cd whatsapp-*
 
 #cat <<EOT >> go.work
 

@@ -38,10 +38,10 @@ local build(arch, test_ui, dind) = [
             ],
           },
       {
-        name: 'download',
+        name: 'web',
         image: 'debian:buster-slim',
         commands: [
-          './download.sh ' + arch,
+          './web/build.sh',
         ],
       },
       {
