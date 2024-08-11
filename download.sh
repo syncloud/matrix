@@ -22,8 +22,8 @@ ln -s /var/snap/matrix/current/config/element.json config.json
 cd ${DIR}/build
 #wget https://github.com/cyberb/sliding-sync/archive/refs/heads/master.tar.gz
 wget https://github.com/matrix-org/sliding-sync/archive/refs/heads/main.tar.gz
-tar -xf master.tar.gz
-rm -rf master.tar.gz
+tar -xf main.tar.gz
+rm -rf main.tar.gz
 mv sliding-sync-main sliding-sync
 
 cd ${DIR}/build
