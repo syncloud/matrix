@@ -2,6 +2,7 @@ local name = 'matrix';
 local browser = 'firefox';
 local nginx = '1.24.0';
 local go = '1.22.6-bullseye';
+local postgresql = "15-bullseye";
 local platform = '24.05';
 local selenium = '4.21.0-20240517';
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
@@ -92,19 +93,14 @@ local build(arch, test_ui, dind) = [
           './whatsapp/build.sh',
         ],
       },
-      {
-        name: 'postgresql',
-        image: 'docker:' + dind,
-        commands: [
-          './postgresql/build.sh',
-        ],
-        volumes: [
-          {
-            name: 'dockersock',
-            path: '/var/run',
-          },
-        ],
-      },
+        {
+            name: "postgresql",
+            image: "postgres:" + postgresql,
+            commands: [
+                "./postgresql/build.sh"
+            ]
+
+        },
       {
         name: 'python',
         image: 'docker:' + dind,

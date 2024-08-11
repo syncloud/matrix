@@ -2,7 +2,8 @@
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
-
+apt update
+apt install -y wget
 TEMPLATE=${DIR}/../config/telegram.template.yaml
 CONFIG=${DIR}/../config/telegram.yaml
 
