@@ -24,7 +24,7 @@ local build(arch, test_ui, dind) = [
         name: 'download',
         image: 'debian:buster-slim',
         commands: [
-          './download.sh + arch,
+          './download.sh ' + arch,
         ],
       },
       {
