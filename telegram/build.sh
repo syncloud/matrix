@@ -15,7 +15,7 @@ cd ${DIR}/../build
 wget https://github.com/cyberb/mautrix-python/archive/refs/heads/master.tar.gz
 tar -xf master.tar.gz
 rm -rf master.tar.gz
-mv mautrix-python-master mautrix-python
+cd mautrix-python-master
 
 cp mautrix/appservice/appservice.py $BUILD_DIR/python/usr/local/lib/python3.8/site-packages/mautrix/appservice
 cp mautrix/api.py $BUILD_DIR/python/usr/local/lib/python3.8/site-packages/mautrix
