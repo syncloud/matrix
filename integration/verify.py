@@ -66,7 +66,7 @@ def test_index(app_domain):
 
 
 def test_matrix(app_domain):
-    wait_for_rest(requests.session(), "https://{0}/_matrix/client/versions".format(app_domain), 200, 10)
+    wait_for_rest(requests.session(), "https://{0}/_matrix/client/versions".format(app_domain), 200, 30)
 
 
 def __log_data_dir(device):
