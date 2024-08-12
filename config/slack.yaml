@@ -205,7 +205,7 @@ appservice:
   address: unix:///var/snap/matrix/current/slack.socket
   # A public address that external services can use to reach this appservice.
   # This value doesn't affect the registration file.
-  public_address: https://bridge.example.com
+  public_address: https://{{{ domain }}}
 
   # The hostname and port where this appservice should listen.
   # For Docker, you generally have to change the hostname to 0.0.0.0.

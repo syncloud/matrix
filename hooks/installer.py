@@ -79,7 +79,8 @@ class Installer:
             f'{self.app_dir}/bin/{bridge}',
             '-g',
             '-c', f'{self.config_dir}/{bridge}.yaml',
-            '-r', f'{self.config_dir}/{bridge}-registration.yaml'
+            '-r', f'{self.config_dir}/{bridge}-registration.yaml',
+            '-ignore-unsupported-server'
         ])
 
     def register_python_bridge(self, bridge):
