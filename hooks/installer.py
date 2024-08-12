@@ -68,20 +68,19 @@ class Installer:
         fs.makepath(join(self.common_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
         self.register_go_bridge('whatsapp')
-        self.register_go_bridge('slack')
+        self.register_go_bridge('slack', '-ignore-unsupported-server')
         self.register_go_bridge('discord')
         self.register_python_bridge('telegram')
         self.register_python_bridge('signal')
         self.fix_permissions()
 
-    def register_go_bridge(self, bridge):
+    def register_go_bridge(self, bridge, *args):
         check_output([
             f'{self.app_dir}/bin/{bridge}',
             '-g',
             '-c', f'{self.config_dir}/{bridge}.yaml',
-            '-r', f'{self.config_dir}/{bridge}-registration.yaml',
-            '-ignore-unsupported-server'
-        ])
+            '-r', f'{self.config_dir}/{bridge}-registration.yaml'
+        ] + list(args))
 
     def register_python_bridge(self, bridge):
         check_output([
