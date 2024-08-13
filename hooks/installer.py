@@ -68,7 +68,7 @@ class Installer:
         fs.makepath(join(self.common_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
         self.register_go_bridge('whatsapp')
-        self.register_go_bridge('slack', '-ignore-unsupported-server')
+        self.register_go_bridge('slack')
         self.register_go_bridge('discord')
         self.register_python_bridge('telegram')
         self.register_python_bridge('signal')
