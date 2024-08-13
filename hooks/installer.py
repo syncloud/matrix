@@ -65,7 +65,7 @@ class Installer:
         gen.generate_files(templates_path, self.config_dir, variables, variable_tags=('{{{', '}}}'))
 
         fs.makepath(join(self.common_dir, 'log'))
-        fs.makepath(join(self.common_dir, 'nginx'))
+        fs.makepath(join(self.data_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
         self.register_go_bridge('whatsapp')
         self.register_go_bridge('slack')
