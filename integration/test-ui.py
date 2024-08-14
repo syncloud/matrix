@@ -42,7 +42,7 @@ def test_login(selenium, device_user, device_password):
 
 def test_room(selenium, device_user, device_password):
     selenium.find_by_xpath("//div[@aria-label='Add room']").click()
-    selenium.find_by_xpath("//div[@aria-label='New room']").click()
+    selenium.find_by_xpath("//li[@aria-label='New room']").click()
     name = selenium.find_by_xpath("//input[@label='Name']")
     name.send_keys("testroom")
     selenium.find_by_xpath("//button[text()='Create room']").click()
@@ -113,3 +113,4 @@ def bridge_bot(bridge, selenium, app_domain, attempt):
 
 def test_teardown(driver):
     driver.quit()
+
