@@ -36,6 +36,7 @@ def test_login(selenium, device_user, device_password):
     selenium.screenshot('login')
     password.send_keys(Keys.RETURN)
     selenium.find_by_xpath("//div[text()='Dismiss']").click()
+    selenium.find_by_xpath("//button[text()='OK']").click()
     selenium.find_by_xpath("//h1[contains(.,'Welcome user')]")
     selenium.screenshot('main')
 
@@ -61,6 +62,7 @@ def test_message(selenium, device_user, device_password):
 def test_image(selenium, device_user, device_password):
     file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
+    selenium.screenshot('image-before-send')
     file.send_keys(join(DIR, 'images', 'profile.jpeg'))
     selenium.find_by_xpath("//button[text()='Upload']").click()
     assert not selenium.exists_by(By.XPATH, "//h2[contains(.,'Upload Failed')]")
