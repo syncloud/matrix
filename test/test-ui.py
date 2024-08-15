@@ -37,7 +37,6 @@ def test_login(selenium, device_user, device_password):
     password.send_keys(Keys.RETURN)
     selenium.find_by_xpath("//div[text()='Dismiss']").click()
     selenium.find_by_xpath("//button[text()='OK']").click()
-    selenium.find_by_xpath("//button[text()='OK']").click()
     selenium.find_by_xpath("//h1[contains(.,'Welcome user')]")
     selenium.screenshot('main')
 
@@ -57,6 +56,7 @@ def test_message(selenium, device_user, device_password):
     name.send_keys("test message")
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
     selenium.find_by_xpath("//div[text()='Later']").click()
+    selenium.find_by_xpath("//button[text()='OK']").click()
     selenium.screenshot('message')
 
 
