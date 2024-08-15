@@ -37,6 +37,7 @@ def test_login(selenium, device_user, device_password):
     password.send_keys(Keys.RETURN)
     selenium.find_by_xpath("//div[text()='Dismiss']").click()
     selenium.find_by_xpath("//button[text()='OK']").click()
+    selenium.find_by_xpath("//button[text()='OK']").click()
     selenium.find_by_xpath("//h1[contains(.,'Welcome user')]")
     selenium.screenshot('main')
 
