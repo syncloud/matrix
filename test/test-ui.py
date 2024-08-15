@@ -104,7 +104,7 @@ def bridge_bot(bridge, selenium, app_domain, attempt):
     selenium.find_by_xpath("//div[@aria-label='Add']").click()
     selenium.find_by_xpath("//span[.='Start new chat']").click()
     bot = '@{0}bot:{1}'.format(bridge, app_domain)
-    selenium.find_by_xpath("//input[@data-testid='invite-dialog-input']").send_keys(bot)
+    selenium.find_by_xpath("//input[@type='text']").send_keys(bot)
     selenium.screenshot('{0}-bot-invite-{1}'.format(bridge, attempt))
     selenium.find_by_xpath("//div[text()='Go']").click()
     time.sleep(5)
@@ -115,8 +115,4 @@ def bridge_bot(bridge, selenium, app_domain, attempt):
     selenium.screenshot('{0}-bot-help-sent-{1}'.format(bridge, attempt))
     selenium.find_by_xpath("//h4[text()='Administration']")
     selenium.screenshot('{0}-bot-answer-{1}'.format(bridge, attempt))
-
-
-def test_teardown(driver):
-    driver.quit()
 
