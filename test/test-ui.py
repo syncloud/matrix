@@ -1,3 +1,5 @@
+import traceback
+
 import pytest
 import time
 from os.path import dirname, join
@@ -94,12 +96,13 @@ def test_bridge_bot(selenium, app_domain, bridge):
             if attempt > attempts:
                 raise e
             else:
+                print(traceback.format_exc())
                 time.sleep(5)
 
 
 def bridge_bot(bridge, selenium, app_domain, attempt):
     selenium.find_by_xpath("//div[@aria-label='Add']").click()
-    selenium.find_by_xpath("//div[@aria-label='Start new chat']").click()
+    selenium.find_by_xpath("//span[.='Start new chat']").click()
     bot = '@{0}bot:{1}'.format(bridge, app_domain)
     selenium.find_by_xpath("//input[@data-testid='invite-dialog-input']").send_keys(bot)
     selenium.screenshot('{0}-bot-invite-{1}'.format(bridge, attempt))
