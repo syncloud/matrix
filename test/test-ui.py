@@ -1,3 +1,5 @@
+import traceback
+
 import pytest
 import time
 from os.path import dirname, join
@@ -29,20 +31,21 @@ def test_start(module_setup, app, domain, device_host):
 
 def test_login(selenium, device_user, device_password):
     selenium.open_app()
-    selenium.find_by_xpath("//div[text()='Sign In']").click()
+    selenium.find_by_xpath("//div[text()='Sign in']").click()
     selenium.find_by_id("mx_LoginForm_username").send_keys(device_user)
     password = selenium.find_by_id("mx_LoginForm_password")
     password.send_keys(device_password)
     selenium.screenshot('login')
     password.send_keys(Keys.RETURN)
-    selenium.find_by_xpath("//span[contains(.,'Welcome user')]")
+    selenium.find_by_xpath("//div[text()='Dismiss']").click()
+    selenium.find_by_xpath("//button[text()='OK']").click()
+    selenium.find_by_xpath("//h1[contains(.,'Welcome user')]")
     selenium.screenshot('main')
 
 
 def test_room(selenium, device_user, device_password):
-    selenium.find_by_xpath("//div[text()='Dismiss']").click()
     selenium.find_by_xpath("//div[@aria-label='Add room']").click()
-    selenium.find_by_xpath("//div[@aria-label='New room']").click()
+    selenium.find_by_xpath("//li[@aria-label='New room']").click()
     name = selenium.find_by_xpath("//input[@label='Name']")
     name.send_keys("testroom")
     selenium.find_by_xpath("//button[text()='Create room']").click()
@@ -55,12 +58,14 @@ def test_message(selenium, device_user, device_password):
     name.send_keys("test message")
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
     selenium.find_by_xpath("//div[text()='Later']").click()
+    selenium.find_by_xpath("//button[text()='OK']").click()
     selenium.screenshot('message')
 
 
 def test_image(selenium, device_user, device_password):
     file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
+    selenium.screenshot('image-before-send')
     file.send_keys(join(DIR, 'images', 'profile.jpeg'))
     selenium.find_by_xpath("//button[text()='Upload']").click()
     assert not selenium.exists_by(By.XPATH, "//h2[contains(.,'Upload Failed')]")
@@ -91,14 +96,15 @@ def test_bridge_bot(selenium, app_domain, bridge):
             if attempt > attempts:
                 raise e
             else:
+                print(traceback.format_exc())
                 time.sleep(5)
 
 
 def bridge_bot(bridge, selenium, app_domain, attempt):
     selenium.find_by_xpath("//div[@aria-label='Add']").click()
-    selenium.find_by_xpath("//div[@aria-label='Start new chat']").click()
+    selenium.find_by_xpath("//span[.='Start new chat']").click()
     bot = '@{0}bot:{1}'.format(bridge, app_domain)
-    selenium.find_by_xpath("//input[@data-testid='invite-dialog-input']").send_keys(bot)
+    selenium.find_by_xpath("//input[@type='text']").send_keys(bot)
     selenium.screenshot('{0}-bot-invite-{1}'.format(bridge, attempt))
     selenium.find_by_xpath("//div[text()='Go']").click()
     time.sleep(5)
@@ -109,8 +115,4 @@ def bridge_bot(bridge, selenium, app_domain, attempt):
     selenium.screenshot('{0}-bot-help-sent-{1}'.format(bridge, attempt))
     selenium.find_by_xpath("//h4[text()='Administration']")
     selenium.screenshot('{0}-bot-answer-{1}'.format(bridge, attempt))
-
-
-def test_teardown(driver):
-    driver.quit()
 

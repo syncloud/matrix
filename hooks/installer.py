@@ -65,7 +65,7 @@ class Installer:
         gen.generate_files(templates_path, self.config_dir, variables, variable_tags=('{{{', '}}}'))
 
         fs.makepath(join(self.common_dir, 'log'))
-        fs.makepath(join(self.common_dir, 'nginx'))
+        fs.makepath(join(self.data_dir, 'nginx'))
         fs.makepath(join(self.data_dir, 'data'))
         self.register_go_bridge('whatsapp')
         self.register_go_bridge('slack')
@@ -74,13 +74,13 @@ class Installer:
         self.register_python_bridge('signal')
         self.fix_permissions()
 
-    def register_go_bridge(self, bridge):
+    def register_go_bridge(self, bridge, *args):
         check_output([
             f'{self.app_dir}/bin/{bridge}',
             '-g',
             '-c', f'{self.config_dir}/{bridge}.yaml',
             '-r', f'{self.config_dir}/{bridge}-registration.yaml'
-        ])
+        ] + list(args))
 
     def register_python_bridge(self, bridge):
         check_output([

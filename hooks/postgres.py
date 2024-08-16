@@ -14,8 +14,6 @@ class Database:
         self.data_dir = data_dir
         self.postgresql_config = join(self.config_path, 'postgresql.conf')
         self.database_dir = join(self.data_dir, 'database')
-        self.old_major_version_file = join(self.data_dir, 'db.major.version')
-        self.new_major_version_file = join(self.app_dir, 'db.major.version')
         self.backup_file = join(self.data_dir, 'database.dump')
         self.database_host = '{0}:{1}'.format(self.database_dir, port)
         self.user = user
@@ -44,8 +42,7 @@ class Database:
 
     def backup(self):
         self.run('snap run matrix.pgdumpall -f {0}'.format(self.backup_file))
-        shutil.copy(self.new_major_version_file, self.old_major_version_file)
-
+        
     def create_db_if_missing(self, db):
         try:
             self.execute(db, "select 1")

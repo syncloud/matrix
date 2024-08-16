@@ -2,5 +2,5 @@
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
 
-/bin/rm -f /var/snap/matrix/common/web.socket
-exec ${DIR}/nginx/sbin/nginx -c /var/snap/matrix/current/config/nginx.conf -p ${DIR}/nginx -e stderr
+/bin/rm -f $SNAP_COMMON/web.socket
+exec ${DIR}/nginx/bin/nginx.sh -c $SNAP_DATA/config/nginx.conf -p ${DIR}/nginx -e stderr
