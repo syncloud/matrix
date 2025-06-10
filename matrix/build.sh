@@ -2,7 +2,7 @@
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 VERSION=$1
-VERSION=syncloud
+#VERSION=syncloud
 
 BUILD_DIR=${DIR}/../build/snap/matrix
 mkdir -p $BUILD_DIR/bin

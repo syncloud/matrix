@@ -3,9 +3,12 @@ local browser = 'firefox';
 local nginx = '1.24.0';
 local go = '1.22.6-bullseye';
 local postgresql = "15-bullseye";
-local platform = '24.05';
+local platform = '25.02';
 local selenium = '4.21.0-20240517';
+local dendrite = "syncloud-0.14.0"
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
+local distro_default = 'buster';
+local distros = ['bookworm', 'buster'];
 
 local build(arch, test_ui, dind) = [
   {
@@ -62,7 +65,7 @@ local build(arch, test_ui, dind) = [
         name: 'build matrix',
         image: 'golang:' + go,
         commands: [
-          './matrix/build.sh',
+          './matrix/build.sh ' + dendrite,
         ],
       },
       {
