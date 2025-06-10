@@ -4,9 +4,9 @@ homeserver:
   address: unix:///var/snap/matrix/current/matrix.socket
   # Publicly accessible base URL for media, used for avatars in relay mode.
   # If not set, the connection address above will be used.
-  public_address: https://{{{ domain }}}
+  public_address: https://{{{ .Domain }}}
   # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
-  domain: {{{ domain }}}
+  domain: {{{ .Domain }}}
 
   # What software is the homeserver running?
   # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
@@ -46,7 +46,7 @@ appservice:
     #           https://github.com/mattn/go-sqlite3#connection-string
     #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
     #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-    uri: postgresql://matrix:matrix@/discord?host={{{ database_dir }}}&port={{{ db_psql_port }}}
+    uri: postgresql://matrix:matrix@/discord?host={{{ .DatabaseDir }}}&port={{{ .DatabasePort }}}
     # Maximum number of connections. Mostly relevant for Postgres.
     max_open_conns: 20
     max_idle_conns: 2
@@ -344,7 +344,7 @@ bridge:
   #     mxid - Specific user
   permissions:
     "*": relay
-    "{{{ domain }}}": admin
+    "{{{ .Domain }}}": admin
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:

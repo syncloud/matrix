@@ -146,7 +146,7 @@ bridge:
   #     mxid - Specific user
   permissions:
     "*": relay
-    "{{{ domain }}}": admin
+    "{{{ .Domain }}}": admin
 
 # Config for the bridge's database.
 database:
@@ -157,7 +157,7 @@ database:
   #           https://github.com/mattn/go-sqlite3#connection-string
   #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
   #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-  uri: postgresql://matrix:matrix@/slack?host={{{ database_dir }}}&port={{{ db_psql_port }}}
+  uri: postgresql://matrix:matrix@/slack?host={{{ .DatabaseDir }}}&port={{{ .DatabasePort }}}
   # Maximum number of connections.
   max_open_conns: 5
   max_idle_conns: 1
@@ -173,7 +173,7 @@ homeserver:
   # but https also works if they run on different machines.
   address: unix:///var/snap/matrix/current/matrix.socket
   # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
-  domain: {{{ domain }}}
+  domain: {{{ .Domain }}}
 
   # What software is the homeserver running?
   # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
@@ -205,7 +205,7 @@ appservice:
   address: unix:///var/snap/matrix/current/slack.socket
   # A public address that external services can use to reach this appservice.
   # This value doesn't affect the registration file.
-  public_address: https://{{{ domain }}}
+  public_address: https://{{{ .Domain }}}
 
   # The hostname and port where this appservice should listen.
   # For Docker, you generally have to change the hostname to 0.0.0.0.

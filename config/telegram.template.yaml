@@ -3,7 +3,7 @@ homeserver:
   # The address that this appservice can use to connect to the homeserver.
   address: unix:///var/snap/matrix/current/matrix.socket
   # The domain of the homeserver (for MXIDs, etc).
-  domain: {{{ domain }}}
+  domain: {{{ .Domain }}}
   # Whether or not to verify the SSL certificate of the homeserver.
   # Only applies if address starts with https://
   verify_ssl: false
@@ -42,7 +42,7 @@ appservice:
   # Format examples:
   #   SQLite:   sqlite:filename.db
   #   Postgres: postgres://username:password@hostname/dbname
-  database: postgresql:///telegram?host={{{ database_dir }}}&user=matrix&password=matrix&port={{{ db_psql_port }}}
+  database: postgresql:///telegram?host={{{ .DatabaseDir }}}&user=matrix&password=matrix&port={{{ .DatabasePort }}}
   # Additional arguments for asyncpg.create_pool() or sqlite3.connect()
   # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
   # https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
@@ -530,7 +530,7 @@ bridge:
   #     mxid - Specific user
   permissions:
     "*": "relaybot"
-    "{{{ domain }}}": "admin"
+    "{{{ .Domain }}}": "admin"
 
   # Options related to the message relay Telegram bot.
   relaybot:
