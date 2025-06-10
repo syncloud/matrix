@@ -1,11 +1,12 @@
 local name = 'matrix';
 local browser = 'firefox';
 local nginx = '1.24.0';
-local go = '1.24.3';
+local go = '1.24.3-bullseye';
 local postgresql = '15-bullseye';
 local platform = '25.02';
 local selenium = '4.21.0-20240517';
 local dendrite = 'syncloud-0.14.1';
+local web_version = '1.11.103';
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
 local python = '3.9-slim-buster';
 local distro_default = 'buster';
@@ -58,7 +59,7 @@ local build(arch, test_ui, dind) = [
         name: 'web',
         image: 'debian:buster-slim',
         commands: [
-          './web/build.sh',
+          './web/build.sh ' + web_version,
         ],
       },
       {
