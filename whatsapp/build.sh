@@ -4,7 +4,7 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
 #WHATSAPP_VERSION=0.8.2
-#MAUTRIX_GO=master
+VERSION=$1
 
 BUILD_DIR=${DIR}/../build/snap
 mkdir -p $BUILD_DIR/bin
@@ -17,17 +17,12 @@ cd ${DIR}/../build
 #wget https://github.com/cyberb/mautrix-go/archive/refs/heads/$BRANCH.tar.gz
 #tar -xf $BRANCH.tar.gz
 #rm -rf $BRANCH.tar.gz
-#mv mautrix-go-$BRANCH mautrix-go
-#wget https://github.com/mautrix/go/archive/refs/heads/${MAUTRIX_GO}.tar.gz
-#tar xf ${MAUTRIX_GO}.tar.gz
-#rm ${MAUTRIX_GO}.tar.gz
-#mv go-${MAUTRIX_GO} mautrix-go
 
 #wget https://github.com/cyberb/whatsapp/archive/refs/heads/master.tar.gz
-wget https://github.com/mautrix/whatsapp/archive/refs/heads/main.tar.gz
-tar -xf main.tar.gz
-rm -rf main.tar.gz
-cd whatsapp-*
+#wget https://github.com/mautrix/whatsapp/archive/refs/heads/main.tar.gz
+#tar -xf main.tar.gz
+#rm -rf main.tar.gz
+#cd whatsapp-*
 
 #cat <<EOT >> go.work
 
@@ -39,5 +34,10 @@ cd whatsapp-*
 #)
 #EOT
 
-GO_LDFLAGS="-s -w -linkmode external -extldflags -static -X main.Tag=0 -X main.Commit=0 -X 'main.BuildTime=`date '+%b %_d %Y, %H:%M:%S'`'"
-go build -tags nocrypto -ldflags "$GO_LDFLAGS" -o $BUILD_DIR/bin/whatsapp .
+wget https://github.com/mautrix/whatsapp/archive/refs/tags/v$VERSION.tar.gz
+tar xf v$VERSION.tar.gz
+cd whatsapp-$VERSION
+
+CGO_ENABLED=0
+GO_LDFLAGS="-X main.Tag=0 -X main.Commit=0 -X 'main.BuildTime=`date '+%b %_d %Y, %H:%M:%S'`'"
+go build -tags nocrypto -ldflags "$GO_LDFLAGS" -o $BUILD_DIR/bin/whatsapp ./cmd/mautrix-whatsapp
