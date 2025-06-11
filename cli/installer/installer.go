@@ -310,7 +310,7 @@ func (i *Installer) UpdateConfigs() error {
 	if err != nil {
 		return err
 	}
-	err = i.RegisterGoBridge("telegram")
+	err = i.RegisterPythonBridge("telegram")
 	if err != nil {
 		return err
 	}
