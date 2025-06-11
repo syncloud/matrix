@@ -9,6 +9,7 @@ local dendrite = 'syncloud-0.14.1';
 local whatsapp = '0.12.1';
 local web_version = '1.11.103';
 local signal = '0.8.3';
+local alpine = '3.22.0';
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
 local python = '3.10-slim-buster';
 local distro_default = 'buster';
@@ -66,7 +67,7 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'signal',
-        image: 'debian:buster-slim',
+        image: 'alpine:' + alpine,
         commands: [
           './signal/build.sh ' + signal + ' ' + arch,
         ],
