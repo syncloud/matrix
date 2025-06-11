@@ -18,5 +18,5 @@ tar -xf master.tar.gz
 rm -rf master.tar.gz
 cd mautrix-python-master
 
-cp mautrix/appservice/appservice.py $BUILD_DIR/python/usr/local/lib/python3.8/site-packages/mautrix/appservice
-cp mautrix/api.py $BUILD_DIR/python/usr/local/lib/python3.8/site-packages/mautrix
+cp mautrix/appservice/appservice.py $BUILD_DIR/python/usr/local/lib/python*/site-packages/mautrix/appservice
+cp mautrix/api.py $BUILD_DIR/python/usr/local/lib/python*/site-packages/mautrix
