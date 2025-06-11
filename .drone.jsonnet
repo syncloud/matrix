@@ -8,7 +8,7 @@ local selenium = '4.21.0-20240517';
 local dendrite = 'syncloud-0.14.1';
 local whatsapp = '0.12.1';
 local web_version = '1.11.103';
-local signald = '0.23.2';
+local signal = '0.8.3';
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
 local python = '3.10-slim-buster';
 local distro_default = 'buster';
@@ -65,10 +65,10 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
-        name: 'build signald',
-        image: 'registry.gitlab.com/signald/signald:' + signald,
+        name: 'signal',
+        image: 'debian:buster-slim',
         commands: [
-          './signal/build.sh',
+          './signal/build.sh ' + signal + ' ' + arch,
         ],
       },
       {
