@@ -10,7 +10,7 @@ local whatsapp = '0.12.1';
 local web_version = '1.11.103';
 local signald = '0.23.2';
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
-local python = '3.9-slim-buster';
+local python = '3.10-slim-buster';
 local distro_default = 'buster';
 local distros = ['bookworm', 'buster'];
 
@@ -116,15 +116,9 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'python',
-        image: 'docker:' + dind,
+        image: 'python:' + python,
         commands: [
           './python/build.sh',
-        ],
-        volumes: [
-          {
-            name: 'dockersock',
-            path: '/var/run',
-          },
         ],
       },
       {
