@@ -9,6 +9,8 @@ local dendrite = 'syncloud-0.14.1';
 local whatsapp = '0.12.1';
 local web_version = '1.11.103';
 local signal = '0.8.3';
+local discord = '0.7.3';
+local slack = '0.2.1';
 local sliding_sync = '0.99.19';
 local alpine = '3.22.0';
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
@@ -89,16 +91,16 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'slack',
-        image: 'golang:' + go,
+        image: 'alpine:' + alpine,
         commands: [
-          './slack/build.sh',
+          './get-bridge.sh ' + slack + ' ' + arch + ' slack',
         ],
       },
       {
         name: 'discord',
-        image: 'golang:' + go,
+        image: 'alpine:' + alpine,
         commands: [
-          './discord/build.sh',
+          './get-bridge.sh ' + discord + ' ' + arch + ' discord',
         ],
       },
       {
