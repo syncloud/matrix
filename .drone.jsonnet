@@ -120,13 +120,6 @@ local build(arch, test_ui, dind) = [
 
       },
       {
-        name: 'python',
-        image: 'python:' + python,
-        commands: [
-          './python/build.sh',
-        ],
-      },
-      {
         name: 'telegram',
         image: 'alpine:' + alpine,
         environment: {
