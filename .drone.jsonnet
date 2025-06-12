@@ -9,6 +9,7 @@ local dendrite = 'syncloud-0.14.1';
 local whatsapp = '0.12.1';
 local web_version = '1.11.103';
 local signal = '0.8.3';
+local sliding_sync = '0.99.19';
 local alpine = '3.22.0';
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
 local python = '3.10-slim-buster';
@@ -81,9 +82,9 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'sliding-sync',
-        image: 'golang:' + go,
+        image: 'alpine:' + alpine,
         commands: [
-          './sliding-sync/build.sh',
+          './sliding-sync/build.sh ' + sliding_sync + ' ' + arch,
         ],
       },
       {
@@ -102,7 +103,7 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'whatsapp',
-        image: 'golang:' + go,
+        image: 'alpine:' + alpine,
         commands: [
           './get-bridge.sh ' + whatsapp + ' ' + arch + ' whatsapp',
         ],

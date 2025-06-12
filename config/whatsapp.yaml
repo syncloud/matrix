@@ -19,7 +19,7 @@ network:
   # {{.BusinessName}} - validated WhatsApp business name
   # {{.Phone}}        - phone number (international format)
   # {{.FullName}}     - Name you set in the contacts list
-  displayname_template: "{{if .BusinessName}}{{.BusinessName}}{{else if .PushName}}{{.PushName}}{{else}}{{.JID}}{{end}} (WA)"
+  displayname_template: "{{or .BusinessName .PushName .Phone}} (WA)"
 
   # Should incoming calls send a message to the Matrix room?
   call_start_notices: true
@@ -63,6 +63,7 @@ network:
   # When direct media is enabled and a piece of media isn't available on the WhatsApp servers,
   # should it be automatically requested from the phone?
   direct_media_auto_request: true
+
   # Settings for converting animated stickers.
   animated_sticker:
     # Format to which animated stickers should be converted.
@@ -98,7 +99,7 @@ network:
       # This is presumably the local storage quota, which may affect what the phone includes in the history sync blob.
       storage_quota_mb: null
     # Settings for media requests. If the media expired, then it will not be on the WA servers.
-    # Media can always be requested by reacting with the â™»ï¸ (recycle) emoji.
+    # Media can always be requested by reacting with the ♻️ (recycle) emoji.
     # These settings determine if the media requests should be done automatically during or after backfill.
     media_requests:
       # Should the expired media be automatically requested from the server as part of the backfill process?
@@ -111,15 +112,16 @@ network:
       # Maximum number of media request responses to handle in parallel per user.
       max_async_handle: 2
 
+
 # Config options that affect the central bridge module.
 bridge:
   # The prefix for commands. Only required in non-management rooms.
-  command_prefix: "!wa"
+  command_prefix: '!wa'
   # Should the bridge create a space for each login containing the rooms that account is in?
   personal_filtering_spaces: true
   # Whether the bridge should set names and avatars explicitly for DM portals.
   # This is only necessary when using clients that don't support MSC4171.
-  private_chat_portal_meta: false
+  private_chat_portal_meta: true
   # Should events be handled asynchronously within portal rooms?
   # If true, events may end up being out of order, but slow events won't block other ones.
   # This is not yet safe to use.
@@ -240,10 +242,10 @@ database:
   #           https://github.com/mattn/go-sqlite3#connection-string
   #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
   #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-  uri: postgresql://matrix:matrix@/whatsapp?host={{{ .DatabaseDir }}}&port={{{ .DatabasePort }}}
+  uri: postgres://user:password@host/database?sslmode=disable
   # Maximum number of connections.
-  max_open_conns: 20
-  max_idle_conns: 2
+  max_open_conns: 5
+  max_idle_conns: 1
   # Maximum connection idle time and lifetime before they're closed. Disabled if null.
   # Parsed with https://pkg.go.dev/time#ParseDuration
   max_conn_idle_time: null
@@ -264,13 +266,13 @@ homeserver:
   # The URL to push real-time bridge status to.
   # If set, the bridge will make POST requests to this URL whenever a user's remote network connection state changes.
   # The bridge will use the appservice as_token to authorize requests.
-  status_endpoint: null
+  status_endpoint:
   # Endpoint for reporting per-message status.
   # If set, the bridge will make POST requests to this URL when processing a message from Matrix.
   # It will make one request when receiving the message (step BRIDGE), one after decrypting if applicable
   # (step DECRYPTED) and one after sending to the remote network (step REMOTE). Errors will also be reported.
   # The bridge will use the appservice as_token to authorize requests.
-  message_send_checkpoint_endpoint: null
+  message_send_checkpoint_endpoint:
   # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
   async_media: false
 
@@ -335,7 +337,7 @@ matrix:
   # Whether the bridge should send error notices via m.notice events when a message fails to bridge.
   message_error_notices: true
   # Whether the bridge should update the m.direct account data event when double puppeting is enabled.
-  sync_direct_chat_list: false
+  sync_direct_chat_list: true
   # Whether created rooms should have federation enabled. If false, created portal rooms
   # will never be federated. Changing this option requires recreating rooms.
   federate_rooms: true
@@ -389,7 +391,7 @@ direct_media:
   # The server name to use for the custom mxc:// URIs.
   # This server name will effectively be a real Matrix server, it just won't implement anything other than media.
   # You must either set up .well-known delegation from this domain to the bridge, or proxy the domain directly to the bridge.
-  server_name:
+  server_name: discord-media.example.com
   # Optionally a custom .well-known response. This defaults to `server_name:443`
   well_known_response:
   # Optionally specify a custom prefix for the media ID part of the MXC URI.
@@ -401,7 +403,7 @@ direct_media:
   allow_proxy: true
   # Matrix server signing key to make the federation tester pass, same format as synapse's .signing.key file.
   # This key is also used to sign the mxc:// URIs to ensure only the bridge can generate them.
-#  server_key:
+  server_key: generate
 
 # Settings for backfilling messages.
 # Note that the exact way settings are applied depends on the network connector.
@@ -441,7 +443,7 @@ double_puppet:
   # Servers to always allow double puppeting from.
   # This is only for other servers and should NOT contain the server the bridge is on.
   servers:
-    example.com: https://example.com
+    anotherserver.example.org: https://matrix.anotherserver.example.org
   # Whether to allow client API URL discovery for other servers. When using this option,
   # users on other servers can use double puppeting even if their server URLs aren't
   # explicitly added to the servers map above.
@@ -449,7 +451,7 @@ double_puppet:
   # Shared secrets for automatic double puppeting.
   # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
   secrets:
-    example.com: foobar
+    example.com: as_token:foobar
 
 # End-to-bridge encryption support options.
 #
@@ -472,7 +474,7 @@ encryption:
   msc4190: false
   # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
   # You must use a client that supports requesting keys from other users to use this feature.
-  allow_key_sharing: false
+  allow_key_sharing: true
   # Pickle key for encrypting encryption keys in the bridge database.
   # If set to generate, a random key will be generated.
   pickle_key: generate
