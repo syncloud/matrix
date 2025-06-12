@@ -22,6 +22,7 @@ type Variables struct {
 	DatabaseDir  string
 	DatabasePort int
 	Domain       string
+	Url          string
 }
 
 type Installer struct {
@@ -270,6 +271,11 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
+	url, err := i.platformClient.GetAppUrl(App)
+	if err != nil {
+		return err
+	}
+
 	variables := Variables{
 		AppDir:       i.appDir,
 		CommonDir:    i.commonDir,
@@ -277,6 +283,7 @@ func (i *Installer) UpdateConfigs() error {
 		DatabaseDir:  i.database.DatabaseDir(),
 		DatabasePort: 5436,
 		Domain:       domain,
+		Url:          url,
 	}
 
 	err = config.GenerateWithDelims(

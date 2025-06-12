@@ -69,7 +69,7 @@ local build(arch, test_ui, dind) = [
         name: 'signal',
         image: 'alpine:' + alpine,
         commands: [
-          './signal/build.sh ' + signal + ' ' + arch,
+          './get-bridge.sh ' + signal + ' ' + arch + ' signal',
         ],
       },
       {
@@ -104,7 +104,7 @@ local build(arch, test_ui, dind) = [
         name: 'whatsapp',
         image: 'golang:' + go,
         commands: [
-          './whatsapp/build.sh ' + whatsapp,
+          './get-bridge.sh ' + whatsapp + ' ' + arch + ' whatsapp',
         ],
       },
       {
