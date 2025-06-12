@@ -12,6 +12,7 @@ local signal = '0.8.3';
 local discord = '0.7.3';
 local slack = '0.2.1';
 local sliding_sync = '0.99.19';
+local telegram = 'main';
 local alpine = '3.22.0';
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
 local python = '3.10-slim-buster';
@@ -137,7 +138,7 @@ local build(arch, test_ui, dind) = [
           },
         },
         commands: [
-          './telegram/build.sh',
+          './telegram/build.sh ' + telegram + ' ' + arch,
         ],
       },
       {
