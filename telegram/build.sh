@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh -xe
 
 DIR=$( cd "$( dirname "$0" )" && pwd )
 cd ${DIR}

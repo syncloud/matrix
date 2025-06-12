@@ -55,11 +55,26 @@ local build(arch, test_ui, dind) = [
         image: 'golang:1.23',
         commands: [
           'cd cli',
-          "CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/install ./cmd/install",
-          "CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/configure ./cmd/configure",
-          "CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh",
-          "CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh",
-          "CGO_ENABLED=0 go build -o ../build/snap/bin/cli ./cmd/cli",
+          'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/install ./cmd/install',
+          'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/configure ./cmd/configure',
+          'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh',
+          'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh',
+          'CGO_ENABLED=0 go build -o ../build/snap/bin/cli ./cmd/cli',
+        ],
+      },
+      {
+        name: 'telegram',
+        image: 'alpine:' + alpine,
+        environment: {
+          TELEGRAM_API_ID: {
+            from_secret: 'TELEGRAM_API_ID',
+          },
+          TELEGRAM_API_HASH: {
+            from_secret: 'TELEGRAM_API_HASH',
+          },
+        },
+        commands: [
+          './telegram/build.sh ' + telegram + ' ' + arch,
         ],
       },
       {
@@ -118,21 +133,6 @@ local build(arch, test_ui, dind) = [
           './postgresql/build.sh',
         ],
 
-      },
-      {
-        name: 'telegram',
-        image: 'alpine:' + alpine,
-        environment: {
-          TELEGRAM_API_ID: {
-            from_secret: 'TELEGRAM_API_ID',
-          },
-          TELEGRAM_API_HASH: {
-            from_secret: 'TELEGRAM_API_HASH',
-          },
-        },
-        commands: [
-          './telegram/build.sh ' + telegram + ' ' + arch,
-        ],
       },
       {
         name: 'package',
