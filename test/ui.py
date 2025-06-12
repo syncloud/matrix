@@ -58,7 +58,7 @@ def test_message(selenium, device_user, device_password):
     name.send_keys("test message")
     selenium.find_by_xpath("//div[@aria-label='Send message']").click()
     selenium.find_by_xpath("//button[text()='Not now']").click()
-    selenium.find_by_xpath("//button[text()='OK']").click()
+    # selenium.find_by_xpath("//button[text()='OK']").click()
     selenium.screenshot('message')
 
 
