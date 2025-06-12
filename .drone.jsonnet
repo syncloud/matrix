@@ -128,7 +128,7 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'telegram',
-        image: 'debian:buster-slim',
+        image: 'alpine:' + alpine,
         environment: {
           TELEGRAM_API_ID: {
             from_secret: 'TELEGRAM_API_ID',
