@@ -36,6 +36,7 @@ type Installer struct {
 	appDir             string
 	dataDir            string
 	commonDir          string
+	bridges            []string
 	logger             *zap.Logger
 }
 
@@ -56,7 +57,14 @@ func New(logger *zap.Logger) *Installer {
 		appDir:             appDir,
 		dataDir:            dataDir,
 		commonDir:          commonDir,
-		logger:             logger,
+		bridges: []string{
+			"whatsapp",
+			"slack",
+			"discord",
+			"telegram",
+			"signal",
+		},
+		logger: logger,
 	}
 }
 
@@ -305,25 +313,11 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
-	err = i.RegisterGoBridge("whatsapp")
-	if err != nil {
-		return err
-	}
-	err = i.RegisterGoBridge("slack")
-	if err != nil {
-		return err
-	}
-	err = i.RegisterGoBridge("discord")
-	if err != nil {
-		return err
-	}
-	err = i.RegisterGoBridge("telegram")
-	if err != nil {
-		return err
-	}
-	err = i.RegisterGoBridge("signal")
-	if err != nil {
-		return err
+	for _, bridge := range i.bridges {
+		err := i.RegisterGoBridge(bridge)
+		if err != nil {
+			return err
+		}
 	}
 
 	err = i.FixPermissions()
@@ -338,16 +332,6 @@ func (i *Installer) UpdateConfigs() error {
 func (i *Installer) RegisterGoBridge(bridge string) error {
 	return i.executor.Run(
 		path.Join(i.appDir, "bin", bridge),
-		"-g",
-		"-c", path.Join(i.configDir, fmt.Sprint(bridge, ".yaml")),
-		"-r", path.Join(i.configDir, fmt.Sprint(bridge, "-registration.yaml")),
-	)
-}
-
-func (i *Installer) RegisterPythonBridge(bridge string) error {
-	return i.executor.Run(
-		path.Join(i.appDir, "python/bin/python"),
-		"-m", fmt.Sprint("mautrix_", bridge),
 		"-g",
 		"-c", path.Join(i.configDir, fmt.Sprint(bridge, ".yaml")),
 		"-r", path.Join(i.configDir, fmt.Sprint(bridge, "-registration.yaml")),
