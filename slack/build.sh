@@ -8,7 +8,7 @@ mkdir -p $BUILD_DIR/bin
 
 cd ${DIR}/../build
 
-wget https://github.com/mautrix/slack/archive/refs/heads/$VERSION.tar.gz
+wget https://github.com/mautrix/slack/archive/$VERSION.tar.gz
 tar -xf $VERSION.tar.gz
 cd slack-*
 #GO_LDFLAGS="-s -w -linkmode external -extldflags -static -X main.Tag=0 -X main.Commit=0 -X 'main.BuildTime=`date '+%b %_d %Y, %H:%M:%S'`'"
