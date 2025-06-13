@@ -5,12 +5,12 @@ local go = '1.24.3-bullseye';
 local postgresql = '15-bullseye';
 local platform = '25.02';
 local selenium = '4.21.0-20240517';
-local dendrite = 'syncloud-0.14.1';
+local dendrite = 'syncloud';
 local whatsapp = '0.12.1';
 local web_version = '1.11.103';
-local signal = '0.8.3';
+local signal = '0.5.1';
 local discord = '0.7.3';
-local slack = '0.2.1';
+local slack = 'be33d34';
 local sliding_sync = '0.99.19';
 local telegram = 'main';
 local alpine = '3.22.0';
@@ -107,9 +107,9 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'slack',
-        image: 'alpine:' + alpine,
+        image: 'golang:' + go,
         commands: [
-          './get-bridge.sh ' + slack + ' ' + arch + ' slack',
+          './slack/build.sh ' + slack,
         ],
       },
       {
@@ -132,7 +132,6 @@ local build(arch, test_ui, dind) = [
         commands: [
           './postgresql/build.sh',
         ],
-
       },
       {
         name: 'package',
