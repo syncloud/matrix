@@ -109,7 +109,7 @@ local build(arch, test_ui, dind) = [
         name: 'slack',
         image: 'golang:' + go,
         commands: [
-          './slack/build.sh',
+          './slack/build.sh ' + slack,
         ],
       },
       {
