@@ -63,6 +63,13 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
+        name: 'slack',
+        image: 'golang:1.21-bullseye',
+        commands: [
+          './slack/build.sh ' + slack,
+        ],
+      },
+      {
         name: 'telegram',
         image: 'alpine:' + alpine,
         environment: {
@@ -92,10 +99,10 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
-        name: 'build matrix',
+        name: 'dendrite',
         image: 'golang:' + go,
         commands: [
-          './matrix/build.sh ' + dendrite,
+          './dendrite/build.sh ' + dendrite,
         ],
       },
       {
@@ -103,13 +110,6 @@ local build(arch, test_ui, dind) = [
         image: 'alpine:' + alpine,
         commands: [
           './sliding-sync/build.sh ' + sliding_sync + ' ' + arch,
-        ],
-      },
-      {
-        name: 'slack',
-        image: 'golang:' + go,
-        commands: [
-          './slack/build.sh ' + slack,
         ],
       },
       {
