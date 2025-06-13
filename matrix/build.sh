@@ -16,3 +16,5 @@ CGO_ENABLED=0 go build -trimpath -v -o $BUILD_DIR/bin/matrix ./cmd/dendrite
 CGO_ENABLED=0 go build -trimpath -v -o $BUILD_DIR/bin/generate-keys ./cmd/generate-keys
 ldd $BUILD_DIR/bin/matrix || true
 ldd $BUILD_DIR/bin/generate-keys || true
+
+cp $DIR/bin/* $BUILD_DIR/bin
