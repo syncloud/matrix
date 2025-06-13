@@ -71,7 +71,7 @@ func New(logger *zap.Logger) *Installer {
 func (i *Installer) Install() error {
 
 	err := i.executor.Run(
-		path.Join(i.appDir, "matrix/bin/generate-keys"),
+		path.Join(i.appDir, "bin/generate-keys"),
 		"--private-key",
 		path.Join(i.dataDir, "private_key.pem"),
 	)
