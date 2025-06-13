@@ -34,5 +34,5 @@ def test_upgrade(device, device_password, device_host, app_archive_path, app_dom
 
 
 def test_log_errors(device):
-    device.run_ssh('! journalctl | grep -i "unsupported database" ')
-
+    output = device.run_ssh('journalctl | grep -i "unsupported database"').strip()
+    assert output == '', output
