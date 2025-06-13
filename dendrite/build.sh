@@ -12,7 +12,7 @@ wget https://github.com/cyberb/dendrite/archive/refs/heads/$VERSION.tar.gz -O de
 tar xf dendrite.tar.gz
 cd dendrite-$VERSION
 
-CGO_ENABLED=0 go build -trimpath -v -o $BUILD_DIR/bin/matrix ./cmd/dendrite
+CGO_ENABLED=0 go build -trimpath -v -o $BUILD_DIR/bin/dendrite ./cmd/dendrite
 CGO_ENABLED=0 go build -trimpath -v -o $BUILD_DIR/bin/generate-keys ./cmd/generate-keys
 ldd $BUILD_DIR/bin/dendrite || true
 ldd $BUILD_DIR/bin/generate-keys || true
