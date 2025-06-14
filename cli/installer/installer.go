@@ -71,7 +71,7 @@ func New(logger *zap.Logger) *Installer {
 func (i *Installer) Install() error {
 
 	err := i.executor.Run(
-		path.Join(i.appDir, "matrix/bin/generate-keys"),
+		path.Join(i.appDir, "bin/generate-keys"),
 		"--private-key",
 		path.Join(i.dataDir, "private_key.pem"),
 	)
@@ -156,18 +156,17 @@ func (i *Installer) Initialize() error {
 }
 
 func (i *Installer) CreateDBs() error {
-	dbs := []string{
-		"matrix",
-		"sync",
-		"whatsapp",
-		"telegram",
-		"signal",
-		"signald",
-		"slack",
-		"discord",
+	dbs := map[string]bool{
+		"matrix":   false,
+		"sync":     false,
+		"whatsapp": false,
+		"telegram": false,
+		"signal":   true, //recreate db (unable to migrate)
+		"slack":    true, //recreate db (unable to migrate)
+		"discord":  false,
 	}
-	for _, db := range dbs {
-		err := i.database.createDbIfMissing(db)
+	for db, recreate := range dbs {
+		err := i.database.createDb(db, recreate)
 		if err != nil {
 			return err
 		}

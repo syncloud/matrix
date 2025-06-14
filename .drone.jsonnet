@@ -8,9 +8,9 @@ local selenium = '4.21.0-20240517';
 local dendrite = 'syncloud';
 local whatsapp = '0.12.1';
 local web_version = '1.11.103';
-local signal = '0.5.1';
+local signal = '0.8.3';
 local discord = '0.7.3';
-local slack = 'be33d34';
+local slack = '0.2.1';
 local sliding_sync = '0.99.19';
 local telegram = 'main';
 local alpine = '3.22.0';
@@ -63,6 +63,13 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
+        name: 'slack',
+        image: 'golang:' + go,
+        commands: [
+          './get-bridge.sh ' + slack + ' ' + arch + ' slack',
+        ],
+      },
+      {
         name: 'telegram',
         image: 'alpine:' + alpine,
         environment: {
@@ -92,10 +99,10 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
-        name: 'build matrix',
+        name: 'dendrite',
         image: 'golang:' + go,
         commands: [
-          './matrix/build.sh ' + dendrite,
+          './dendrite/build.sh ' + dendrite,
         ],
       },
       {
@@ -103,13 +110,6 @@ local build(arch, test_ui, dind) = [
         image: 'alpine:' + alpine,
         commands: [
           './sliding-sync/build.sh ' + sliding_sync + ' ' + arch,
-        ],
-      },
-      {
-        name: 'slack',
-        image: 'golang:' + go,
-        commands: [
-          './slack/build.sh ' + slack,
         ],
       },
       {

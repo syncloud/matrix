@@ -94,19 +94,30 @@ func (d *Database) Backup() error {
 	)
 }
 
-func (d *Database) createDbIfMissing(db string) error {
+func (d *Database) createDb(db string, recreate bool) error {
 	err := d.Execute(db, "select 1")
-	if err != nil {
-		d.logger.Info("database does not exist, will try to create", zap.String("db", db))
+	if err == nil {
+		if !recreate {
+			d.logger.Info("database already exists", zap.String("db", db))
+			return nil
+		}
+		d.logger.Info("dropping database", zap.String("db", db))
 		err = d.Execute(
 			"postgres",
-			fmt.Sprintf("CREATE DATABASE %s OWNER %s TEMPLATE template0 ENCODING 'UTF8'", db, d.user),
+			fmt.Sprint("DROP DATABASE ", db),
 		)
 		if err != nil {
-			d.logger.Error("error creating db", zap.Error(err))
+			d.logger.Error("error dropping db", zap.Error(err))
 			return err
 		}
 	}
-	d.logger.Info("database already exists", zap.String("db", db))
+	err = d.Execute(
+		"postgres",
+		fmt.Sprintf("CREATE DATABASE %s OWNER %s TEMPLATE template0 ENCODING 'UTF8'", db, d.user),
+	)
+	if err != nil {
+		d.logger.Error("error creating db", zap.Error(err))
+		return err
+	}
 	return nil
 }
