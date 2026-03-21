@@ -8,6 +8,10 @@ mkdir -p $BUILD_DIR/bin
 
 cd $DIR/../build
 
+#wget https://github.com/jackmaninov/dendrite/archive/refs/heads/main.tar.gz -O dendrite.tar.gz
+#tar xf dendrite.tar.gz
+#cd dendrite-main
+
 wget https://github.com/cyberb/dendrite/archive/refs/heads/$VERSION.tar.gz -O dendrite.tar.gz
 tar xf dendrite.tar.gz
 cd dendrite-$VERSION

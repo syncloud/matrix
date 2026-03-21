@@ -2,22 +2,22 @@ local name = 'matrix';
 local browser = 'firefox';
 local nginx = '1.24.0';
 local go = '1.24.3-bullseye';
-local postgresql = '15-bullseye';
-local platform = '25.02';
-local selenium = '4.21.0-20240517';
-local dendrite = 'syncloud';
-local whatsapp = '0.12.1';
+local postgresql = '16-bullseye';
+local platform = '26.03';
+local selenium = '4.35.0-20250828';
+local dendrite = 'main';
+local whatsapp = '0.2601.0';
 local web_version = '1.11.103';
 local signal = '0.8.3';
 local discord = '0.7.3';
 local slack = '0.2.1';
-local sliding_sync = '0.99.19';
 local telegram = 'main';
 local alpine = '3.22.0';
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
-local python = '3.10-slim-buster';
-local distro_default = 'buster';
-local distros = ['bookworm', 'buster'];
+local python = '3.12-slim-bookworm';
+local distro_default = 'bookworm';
+local distros = ['bookworm'];
+local debian = 'bookworm-slim';
 
 local build(arch, test_ui, dind) = [
   {
@@ -31,7 +31,7 @@ local build(arch, test_ui, dind) = [
     steps: [
       {
         name: 'version',
-        image: 'debian:buster-slim',
+        image: 'debian:' + debian,
         commands: [
           'echo $DRONE_BUILD_NUMBER > version',
         ],
@@ -45,7 +45,7 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'nginx test',
-        image: 'syncloud/platform-buster-' + arch + ':' + platform,
+        image: 'syncloud/platform-' + distro_default + '-' + arch + ':' + platform,
         commands: [
           './nginx/test.sh',
         ],
@@ -86,7 +86,7 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'web',
-        image: 'debian:buster-slim',
+        image: 'debian:' + debian,
         commands: [
           './web/build.sh ' + web_version,
         ],
@@ -103,13 +103,6 @@ local build(arch, test_ui, dind) = [
         image: 'golang:' + go,
         commands: [
           './dendrite/build.sh ' + dendrite,
-        ],
-      },
-      {
-        name: 'sliding-sync',
-        image: 'alpine:' + alpine,
-        commands: [
-          './sliding-sync/build.sh ' + sliding_sync + ' ' + arch,
         ],
       },
       {
@@ -135,7 +128,7 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'package',
-        image: 'debian:buster-slim',
+        image: 'debian:' + debian,
         commands: [
           'VERSION=$(cat version)',
           './package.sh ' + name + ' $VERSION ',
@@ -221,7 +214,7 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'upload',
-        image: 'debian:buster-slim',
+        image: 'debian:' + debian,
         environment: {
           AWS_ACCESS_KEY_ID: {
             from_secret: 'AWS_ACCESS_KEY_ID',
@@ -247,7 +240,7 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'promote',
-        image: 'debian:buster-slim',
+        image: 'debian:' + debian,
         environment: {
           AWS_ACCESS_KEY_ID: {
             from_secret: 'AWS_ACCESS_KEY_ID',
@@ -393,4 +386,5 @@ local build(arch, test_ui, dind) = [
 ];
 
 build('amd64', true, '20.10.21-dind') +
-build('arm64', false, '19.03.8-dind')
+build('arm64', false, '20.10.21-dind')
+

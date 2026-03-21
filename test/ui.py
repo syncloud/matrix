@@ -38,7 +38,7 @@ def test_login(selenium, device_user, device_password):
     selenium.screenshot('login')
     password.send_keys(Keys.RETURN)
     selenium.find_by_xpath("//button[text()='Dismiss']").click()
-    selenium.find_by_xpath("//div[text()='Enable desktop notifications']/..//button[text()='Dismiss']").click()
+    #selenium.find_by_xpath("//div[text()='Enable desktop notifications']/..//button[text()='Dismiss']").click()
     selenium.find_by_xpath("//h1[contains(.,'Welcome user')]")
     selenium.screenshot('main')
 
@@ -101,6 +101,10 @@ def test_bridge_bot(selenium, app_domain, bridge):
 
 
 def bridge_bot(bridge, selenium, app_domain, attempt):
+    if selenium.driver.find_elements(By.XPATH, "//div[contains(@class,'mx_Dialog')]"):
+        from selenium.webdriver.common.action_chains import ActionChains
+        ActionChains(selenium.driver).send_keys(Keys.ESCAPE).perform()
+        time.sleep(1)
     selenium.find_by_xpath("//div[@aria-label='Add']").click()
     selenium.find_by_xpath("//span[.='Start new chat']").click()
     bot = '@{0}bot:{1}'.format(bridge, app_domain)
