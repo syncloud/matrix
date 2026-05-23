@@ -93,7 +93,7 @@ apps:
     command: bin/cli restore-post-start
 
 confinement: strict
-description: Matrix
+description: An open network for secure, decentralized communication
 grade: stable
 name: matrix
 summary: Matrix
