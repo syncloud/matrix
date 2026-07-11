@@ -44,8 +44,8 @@ def test_login(selenium, device_user, device_password):
 
 
 def test_room(selenium, device_user, device_password):
-    selenium.find_by_xpath("//button[@aria-label='New conversation']").click()
-    selenium.find_by_xpath("//*[@role='menuitem' and contains(.,'New room')]").click()
+    selenium.find_by_xpath("//button[@aria-labelledby=//span[normalize-space(.)='New conversation']/@id]").click()
+    selenium.find_by_xpath("//button[normalize-space(.)='New room']").click()
     label = selenium.find_by_xpath("//label[normalize-space(.)='Name']")
     name = selenium.driver.find_element(By.ID, label.get_attribute('for'))
     name.send_keys("testroom")
@@ -107,8 +107,8 @@ def bridge_bot(bridge, selenium, app_domain, attempt):
         from selenium.webdriver.common.action_chains import ActionChains
         ActionChains(selenium.driver).send_keys(Keys.ESCAPE).perform()
         time.sleep(1)
-    selenium.find_by_xpath("//button[@aria-label='New conversation']").click()
-    selenium.find_by_xpath("//*[@role='menuitem' and contains(.,'Start chat')]").click()
+    selenium.find_by_xpath("//button[@aria-labelledby=//span[normalize-space(.)='New conversation']/@id]").click()
+    selenium.find_by_xpath("//button[normalize-space(.)='Start chat']").click()
     bot = '@{0}bot:{1}'.format(bridge, app_domain)
     selenium.find_by_xpath("//*[@data-testid='invite-dialog-input']").send_keys(bot)
     selenium.screenshot('{0}-bot-invite-{1}'.format(bridge, attempt))
