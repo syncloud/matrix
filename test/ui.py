@@ -42,6 +42,24 @@ def dismiss_toasts(selenium):
         time.sleep(1)
 
 
+def compose_menu(selenium, item):
+    item_xpath = "//button[normalize-space(.)='{0}']".format(item)
+    for _ in range(4):
+        selenium.find_by_xpath(
+            "//button[@aria-labelledby=//span[normalize-space(.)='New conversation']/@id]").click()
+        time.sleep(1)
+        ok = selenium.driver.find_elements(
+            By.XPATH, "//div[@role='dialog']//button[normalize-space(.)='Ok']")
+        if ok:
+            ok[0].click()
+            time.sleep(1)
+        buttons = [b for b in selenium.driver.find_elements(By.XPATH, item_xpath) if b.is_displayed()]
+        if buttons:
+            buttons[0].click()
+            return
+    raise Exception("compose menu item not found: " + item)
+
+
 def test_login(selenium, device_user, device_password):
     selenium.open_app()
     selenium.find_by_xpath("//a[text()='Sign in']").click()
@@ -57,8 +75,7 @@ def test_login(selenium, device_user, device_password):
 
 def test_room(selenium, device_user, device_password):
     dismiss_toasts(selenium)
-    selenium.find_by_xpath("//button[@aria-labelledby=//span[normalize-space(.)='New conversation']/@id]").click()
-    selenium.find_by_xpath("//button[normalize-space(.)='New room']").click()
+    compose_menu(selenium, "New room")
     label = selenium.find_by_xpath("//label[normalize-space(.)='Name']")
     name = selenium.driver.find_element(By.ID, label.get_attribute('for'))
     name.send_keys("testroom")
@@ -120,8 +137,7 @@ def bridge_bot(bridge, selenium, app_domain, attempt):
         from selenium.webdriver.common.action_chains import ActionChains
         ActionChains(selenium.driver).send_keys(Keys.ESCAPE).perform()
         time.sleep(1)
-    selenium.find_by_xpath("//button[@aria-labelledby=//span[normalize-space(.)='New conversation']/@id]").click()
-    selenium.find_by_xpath("//button[normalize-space(.)='Start chat']").click()
+    compose_menu(selenium, "Start chat")
     bot = '@{0}bot:{1}'.format(bridge, app_domain)
     selenium.find_by_xpath("//*[@data-testid='invite-dialog-input']").send_keys(bot)
     selenium.screenshot('{0}-bot-invite-{1}'.format(bridge, attempt))
