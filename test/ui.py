@@ -139,9 +139,11 @@ def bridge_bot(bridge, selenium, app_domain, attempt):
         time.sleep(1)
     compose_menu(selenium, "Start chat")
     bot = '@{0}bot:{1}'.format(bridge, app_domain)
-    selenium.find_by_xpath("//*[@data-testid='invite-dialog-input']").send_keys(bot)
+    invite = selenium.find_by_xpath("//*[contains(@class,'mx_InviteDialog')]//input")
+    invite.send_keys(bot)
+    invite.send_keys(Keys.RETURN)
     selenium.screenshot('{0}-bot-invite-{1}'.format(bridge, attempt))
-    selenium.find_by_xpath("//button[text()='Go']").click()
+    selenium.find_by_xpath("//*[contains(@class,'mx_InviteDialog_goButton')]").click()
     time.sleep(5)
     for label in ["Continue", "Start chat", "Yes"]:
         button = selenium.driver.find_elements(By.XPATH, "//button[text()='{0}']".format(label))
