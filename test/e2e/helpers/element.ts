@@ -4,6 +4,7 @@ import { Page, expect } from '@playwright/test'
 // key-storage nag, release announcement) whose backdrops intercept clicks.
 const dismissSelectors = [
   ".mx_Toast_toast button:has-text('Dismiss')",
+  ".mx_Toast_toast button:has-text('OK')",
   "button:has-text('Yes, dismiss')",
   ".mx_Dialog button:has-text('Ok')",
 ]
