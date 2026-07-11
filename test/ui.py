@@ -29,38 +29,37 @@ def test_start(module_setup, app, domain, device_host):
     add_host_alias(app, device_host, domain)
 
 
-def dismiss_toasts(selenium):
-    for _ in range(6):
-        buttons = selenium.driver.find_elements(
-            By.XPATH, "//*[contains(@class,'mx_Toast')]//button[normalize-space(.)='Dismiss']")
-        if not buttons:
+def dismiss_modals(selenium):
+    xpaths = [
+        "//*[contains(@class,'mx_Toast')]//button[normalize-space(.)='Dismiss']",
+        "//div[contains(@class,'mx_Dialog')]//button[normalize-space(.)='Yes, dismiss']",
+        "//div[@role='dialog']//button[normalize-space(.)='Ok']",
+    ]
+    for _ in range(8):
+        target = None
+        for xp in xpaths:
+            found = [b for b in selenium.driver.find_elements(By.XPATH, xp) if b.is_displayed()]
+            if found:
+                target = found[0]
+                break
+        if target is None:
             break
         try:
-            buttons[0].click()
-        except Exception:
-            break
-        time.sleep(1)
-
-
-def dismiss_announcement(selenium):
-    for ok in selenium.driver.find_elements(
-            By.XPATH, "//div[@role='dialog']//button[normalize-space(.)='Ok']"):
-        try:
-            ok.click()
+            selenium.driver.execute_script("arguments[0].click()", target)
             time.sleep(1)
         except Exception:
-            pass
+            break
 
 
 def compose_menu(selenium, item):
     item_xpath = "//button[normalize-space(.)='{0}']".format(item)
     compose_xpath = "//button[@aria-labelledby=//span[normalize-space(.)='New conversation']/@id]"
     for _ in range(5):
-        dismiss_announcement(selenium)
+        dismiss_modals(selenium)
         compose = selenium.find_by_xpath(compose_xpath)
         selenium.driver.execute_script("arguments[0].click()", compose)
         time.sleep(1)
-        dismiss_announcement(selenium)
+        dismiss_modals(selenium)
         buttons = [b for b in selenium.driver.find_elements(By.XPATH, item_xpath) if b.is_displayed()]
         if buttons:
             selenium.driver.execute_script("arguments[0].click()", buttons[0])
@@ -77,12 +76,12 @@ def test_login(selenium, device_user, device_password):
     selenium.screenshot('login')
     password.send_keys(Keys.RETURN)
     selenium.find_by_xpath("//h1[contains(.,'Welcome user')]")
-    dismiss_toasts(selenium)
+    dismiss_modals(selenium)
     selenium.screenshot('main')
 
 
 def test_room(selenium, device_user, device_password):
-    dismiss_toasts(selenium)
+    dismiss_modals(selenium)
     compose_menu(selenium, "New room")
     label = selenium.find_by_xpath("//label[normalize-space(.)='Name']")
     name = selenium.driver.find_element(By.ID, label.get_attribute('for'))
@@ -92,17 +91,17 @@ def test_room(selenium, device_user, device_password):
 
 
 def test_message(selenium, device_user, device_password):
+    dismiss_modals(selenium)
     selenium.find_by_xpath("//*[@data-testid='room-list']//*[@title='testroom']").click()
     name = selenium.find_by_xpath("//*[@aria-label='Message composer']//div[@role='textbox']")
     name.send_keys("test message")
     name.send_keys(Keys.RETURN)
-    dismiss = selenium.driver.find_elements(By.XPATH, "//button[text()='Not now']")
-    if dismiss:
-        dismiss[0].click()
+    dismiss_modals(selenium)
     selenium.screenshot('message')
 
 
 def test_image(selenium, device_user, device_password):
+    dismiss_modals(selenium)
     file = selenium.driver.find_element(By.XPATH, "//input[@type='file' and @multiple]")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     selenium.screenshot('image-before-send')
@@ -158,6 +157,7 @@ def bridge_bot(bridge, selenium, app_domain, attempt):
         if button:
             button[0].click()
             time.sleep(2)
+    dismiss_modals(selenium)
     name = selenium.find_by_xpath("//*[@aria-label='Message composer']//div[@role='textbox']")
     name.send_keys("help")
     selenium.screenshot('{0}-bot-help-{1}'.format(bridge, attempt))
