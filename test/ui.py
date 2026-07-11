@@ -78,7 +78,7 @@ def test_message(selenium, device_user, device_password):
 
 
 def test_image(selenium, device_user, device_password):
-    file = selenium.driver.find_element(By.XPATH, "//*[@data-testid='room-upload-context-input']")
+    file = selenium.driver.find_element(By.XPATH, "//input[@type='file' and @multiple]")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     selenium.screenshot('image-before-send')
     file.send_keys(join(DIR, 'images', 'profile.jpeg'))
@@ -88,7 +88,7 @@ def test_image(selenium, device_user, device_password):
 
 
 def test_image_big(selenium, device_user, device_password):
-    file = selenium.driver.find_element(By.XPATH, "//*[@data-testid='room-upload-context-input']")
+    file = selenium.driver.find_element(By.XPATH, "//input[@type='file' and @multiple]")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     image = join(DIR, 'images', 'image-big.png')
     file.send_keys(image)
