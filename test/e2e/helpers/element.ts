@@ -1,17 +1,27 @@
 import { Page, expect } from '@playwright/test'
 
 // element-web 1.12 shows transient overlays (unsupported-browser toast,
-// key-storage nag) whose backdrops intercept clicks. Auto-dismiss them
-// whenever they block an action.
-export async function registerDismissers(page: Page) {
-  await page.addLocatorHandler(
-    page.getByRole('button', { name: 'Yes, dismiss' }),
-    async (locator) => { await locator.click() },
-  )
-  await page.addLocatorHandler(
-    page.locator('.mx_Toast_toast').getByRole('button', { name: 'Dismiss' }),
-    async (locator) => { await locator.click() },
-  )
+// key-storage nag, release announcement) whose backdrops intercept clicks.
+const dismissSelectors = [
+  ".mx_Toast_toast button:has-text('Dismiss')",
+  "button:has-text('Yes, dismiss')",
+  ".mx_Dialog button:has-text('Ok')",
+]
+
+export async function dismissOverlays(page: Page) {
+  for (let i = 0; i < 8; i++) {
+    let clicked = false
+    for (const selector of dismissSelectors) {
+      const button = page.locator(selector).first()
+      if (await button.isVisible().catch(() => false)) {
+        await button.click().catch(() => {})
+        await page.waitForTimeout(500)
+        clicked = true
+        break
+      }
+    }
+    if (!clicked) break
+  }
 }
 
 export async function login(page: Page, user: string, password: string) {
@@ -21,12 +31,14 @@ export async function login(page: Page, user: string, password: string) {
   await password_field.fill(password)
   await password_field.press('Enter')
   await expect(page.getByRole('heading', { name: /Welcome user/ })).toBeVisible({ timeout: 60_000 })
+  await dismissOverlays(page)
 }
 
 // The compose button opens a Radix menu; a one-time "Introducing Sections"
 // announcement can cover the top item. Retry open + dismiss until the item
 // is clickable.
 export async function composeMenu(page: Page, item: string) {
+  await dismissOverlays(page)
   const compose = page.getByRole('button', { name: 'New conversation', exact: true })
   const menuItem = page.getByRole('menuitem', { name: item, exact: true })
   const ok = page.getByRole('dialog').getByRole('button', { name: 'Ok', exact: true })
@@ -48,6 +60,7 @@ export async function createRoom(page: Page, name: string) {
 }
 
 export async function openRoom(page: Page, name: string) {
+  await dismissOverlays(page)
   await page.getByTestId('room-list').locator(`[title="${name}"]`).first().click()
 }
 
@@ -83,6 +96,7 @@ export async function bridgeBot(page: Page, bridge: string, appDomain: string) {
   }
   // Re-send help until the bot answers with its Administration help section.
   await expect(async () => {
+    await dismissOverlays(page)
     const box = composer(page)
     await box.fill('help')
     await box.press('Enter')

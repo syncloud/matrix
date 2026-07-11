@@ -11,7 +11,6 @@ const appDomain = process.env.PLAYWRIGHT_APP_DOMAIN ?? 'matrix.bookworm.com'
 const bridges = ['whatsapp', 'telegram', 'signal', 'slack', 'discord']
 
 test('matrix element-web ui', async ({ page }, testInfo) => {
-  await el.registerDismissers(page)
   await page.goto('/')
   await shoot(page, testInfo, 'welcome')
 
