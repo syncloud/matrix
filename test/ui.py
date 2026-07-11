@@ -42,20 +42,28 @@ def dismiss_toasts(selenium):
         time.sleep(1)
 
 
+def dismiss_announcement(selenium):
+    for ok in selenium.driver.find_elements(
+            By.XPATH, "//div[@role='dialog']//button[normalize-space(.)='Ok']"):
+        try:
+            ok.click()
+            time.sleep(1)
+        except Exception:
+            pass
+
+
 def compose_menu(selenium, item):
     item_xpath = "//button[normalize-space(.)='{0}']".format(item)
-    for _ in range(4):
-        selenium.find_by_xpath(
-            "//button[@aria-labelledby=//span[normalize-space(.)='New conversation']/@id]").click()
+    compose_xpath = "//button[@aria-labelledby=//span[normalize-space(.)='New conversation']/@id]"
+    for _ in range(5):
+        dismiss_announcement(selenium)
+        compose = selenium.find_by_xpath(compose_xpath)
+        selenium.driver.execute_script("arguments[0].click()", compose)
         time.sleep(1)
-        ok = selenium.driver.find_elements(
-            By.XPATH, "//div[@role='dialog']//button[normalize-space(.)='Ok']")
-        if ok:
-            ok[0].click()
-            time.sleep(1)
+        dismiss_announcement(selenium)
         buttons = [b for b in selenium.driver.find_elements(By.XPATH, item_xpath) if b.is_displayed()]
         if buttons:
-            buttons[0].click()
+            selenium.driver.execute_script("arguments[0].click()", buttons[0])
             return
     raise Exception("compose menu item not found: " + item)
 
