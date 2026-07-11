@@ -54,14 +54,16 @@ def dismiss_modals(selenium):
 def compose_menu(selenium, item):
     item_xpath = "//button[normalize-space(.)='{0}']".format(item)
     compose_xpath = "//button[@aria-labelledby=//span[normalize-space(.)='New conversation']/@id]"
-    for _ in range(6):
+    for _ in range(8):
         dismiss_modals(selenium)
-        try:
-            selenium.find_by_xpath(compose_xpath).click()
-        except Exception:
-            continue
-        time.sleep(1)
-        dismiss_modals(selenium)
+        compose = selenium.find_by_xpath(compose_xpath)
+        if compose.get_attribute('aria-expanded') != 'true':
+            try:
+                compose.click()
+            except Exception:
+                continue
+            time.sleep(1)
+            dismiss_modals(selenium)
         buttons = [b for b in selenium.driver.find_elements(By.XPATH, item_xpath) if b.is_displayed()]
         if buttons:
             try:
