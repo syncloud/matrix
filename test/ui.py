@@ -29,6 +29,19 @@ def test_start(module_setup, app, domain, device_host):
     add_host_alias(app, device_host, domain)
 
 
+def dismiss_toasts(selenium):
+    for _ in range(6):
+        buttons = selenium.driver.find_elements(
+            By.XPATH, "//*[contains(@class,'mx_Toast')]//button[normalize-space(.)='Dismiss']")
+        if not buttons:
+            break
+        try:
+            buttons[0].click()
+        except Exception:
+            break
+        time.sleep(1)
+
+
 def test_login(selenium, device_user, device_password):
     selenium.open_app()
     selenium.find_by_xpath("//a[text()='Sign in']").click()
@@ -37,13 +50,13 @@ def test_login(selenium, device_user, device_password):
     password.send_keys(device_password)
     selenium.screenshot('login')
     password.send_keys(Keys.RETURN)
-    selenium.find_by_xpath("//button[text()='Dismiss']").click()
-    #selenium.find_by_xpath("//div[text()='Enable desktop notifications']/..//button[text()='Dismiss']").click()
     selenium.find_by_xpath("//h1[contains(.,'Welcome user')]")
+    dismiss_toasts(selenium)
     selenium.screenshot('main')
 
 
 def test_room(selenium, device_user, device_password):
+    dismiss_toasts(selenium)
     selenium.find_by_xpath("//button[@aria-labelledby=//span[normalize-space(.)='New conversation']/@id]").click()
     selenium.find_by_xpath("//button[normalize-space(.)='New room']").click()
     label = selenium.find_by_xpath("//label[normalize-space(.)='Name']")
