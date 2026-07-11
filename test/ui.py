@@ -44,26 +44,28 @@ def test_login(selenium, device_user, device_password):
 
 
 def test_room(selenium, device_user, device_password):
-    selenium.find_by_xpath("//div[@aria-label='Add room']").click()
-    selenium.find_by_xpath("//li[@aria-label='New room']").click()
-    name = selenium.find_by_xpath("//input[@label='Name']")
+    selenium.find_by_xpath("//button[@aria-label='New conversation']").click()
+    selenium.find_by_xpath("//*[@role='menuitem' and contains(.,'New room')]").click()
+    label = selenium.find_by_xpath("//label[normalize-space(.)='Name']")
+    name = selenium.driver.find_element(By.ID, label.get_attribute('for'))
     name.send_keys("testroom")
     selenium.find_by_xpath("//button[text()='Create room']").click()
     selenium.screenshot('room')
 
 
 def test_message(selenium, device_user, device_password):
-    selenium.find_by_xpath("//div[@title='testroom']").click()
-    name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send an encrypted message')]")
+    selenium.find_by_xpath("//*[@data-testid='room-list']//*[@title='testroom']").click()
+    name = selenium.find_by_xpath("//*[@aria-label='Message composer']//div[@role='textbox']")
     name.send_keys("test message")
-    selenium.find_by_xpath("//div[@aria-label='Send message']").click()
-    selenium.find_by_xpath("//button[text()='Not now']").click()
-    # selenium.find_by_xpath("//button[text()='OK']").click()
+    name.send_keys(Keys.RETURN)
+    dismiss = selenium.driver.find_elements(By.XPATH, "//button[text()='Not now']")
+    if dismiss:
+        dismiss[0].click()
     selenium.screenshot('message')
 
 
 def test_image(selenium, device_user, device_password):
-    file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
+    file = selenium.driver.find_element(By.XPATH, "//*[@data-testid='room-upload-context-input']")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     selenium.screenshot('image-before-send')
     file.send_keys(join(DIR, 'images', 'profile.jpeg'))
@@ -73,7 +75,7 @@ def test_image(selenium, device_user, device_password):
 
 
 def test_image_big(selenium, device_user, device_password):
-    file = selenium.driver.find_element(By.XPATH, "//div[@aria-label='Attachment']/../input[@type='file']")
+    file = selenium.driver.find_element(By.XPATH, "//*[@data-testid='room-upload-context-input']")
     selenium.driver.execute_script("arguments[0].removeAttribute('style')", file)
     image = join(DIR, 'images', 'image-big.png')
     file.send_keys(image)
@@ -105,17 +107,22 @@ def bridge_bot(bridge, selenium, app_domain, attempt):
         from selenium.webdriver.common.action_chains import ActionChains
         ActionChains(selenium.driver).send_keys(Keys.ESCAPE).perform()
         time.sleep(1)
-    selenium.find_by_xpath("//div[@aria-label='Add']").click()
-    selenium.find_by_xpath("//span[.='Start new chat']").click()
+    selenium.find_by_xpath("//button[@aria-label='New conversation']").click()
+    selenium.find_by_xpath("//*[@role='menuitem' and contains(.,'Start chat')]").click()
     bot = '@{0}bot:{1}'.format(bridge, app_domain)
-    selenium.find_by_xpath("//input[@type='text']").send_keys(bot)
+    selenium.find_by_xpath("//*[@data-testid='invite-dialog-input']").send_keys(bot)
     selenium.screenshot('{0}-bot-invite-{1}'.format(bridge, attempt))
-    selenium.find_by_xpath("//div[text()='Go']").click()
+    selenium.find_by_xpath("//button[text()='Go']").click()
     time.sleep(5)
-    name = selenium.find_by_xpath("//div[contains(@aria-label, 'Send a message')]")
+    for label in ["Continue", "Start chat", "Yes"]:
+        button = selenium.driver.find_elements(By.XPATH, "//button[text()='{0}']".format(label))
+        if button:
+            button[0].click()
+            time.sleep(2)
+    name = selenium.find_by_xpath("//*[@aria-label='Message composer']//div[@role='textbox']")
     name.send_keys("help")
     selenium.screenshot('{0}-bot-help-{1}'.format(bridge, attempt))
-    selenium.find_by_xpath("//div[@aria-label='Send message']").click()
+    name.send_keys(Keys.RETURN)
     selenium.screenshot('{0}-bot-help-sent-{1}'.format(bridge, attempt))
     selenium.find_by_xpath("//h4[text()='Administration']")
     selenium.screenshot('{0}-bot-answer-{1}'.format(bridge, attempt))
