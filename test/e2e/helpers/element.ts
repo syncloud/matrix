@@ -90,11 +90,16 @@ export async function bridgeBot(page: Page, bridge: string, appDomain: string) {
       await button.click()
     }
   }
-  await expect(async () => {
-    await dismissOverlays(page)
-    const box = composer(page)
-    await box.fill('help')
-    await box.press('Enter')
-    await expect(page.getByRole('heading', { name: 'Administration', exact: true })).toBeVisible({ timeout: 15_000 })
-  }).toPass({ timeout: 150_000 })
+  await dismissOverlays(page)
+  const box = composer(page)
+  await box.fill('help')
+  await box.press('Enter')
+  const botJoined = page
+    .locator('.mx_EventTile, .mx_GenericEventListSummary')
+    .filter({ hasText: /joined/i })
+    .filter({ hasText: /bot/i })
+  await expect(botJoined.first()).toBeVisible({ timeout: 60_000 })
+  await box.fill('help')
+  await box.press('Enter')
+  await expect(page.getByRole('heading', { name: 'Administration', exact: true })).toBeVisible({ timeout: 30_000 })
 }

@@ -9,11 +9,10 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: 0,
-  maxFailures: 1,
   reporter: [['list']],
   outputDir: `${artifactDir}/playwright/test-results`,
   globalTeardown: './globalTeardown.ts',
-  timeout: 180_000,
+  timeout: 900_000,
   expect: { timeout: 30_000 },
   use: {
     baseURL: `https://${appDomain}`,

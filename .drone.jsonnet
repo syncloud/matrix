@@ -13,7 +13,7 @@ local discord = '0.7.6';
 local slack = '0.2606.0';
 local telegram = '0.2606.0';
 local alpine = '3.22.0';
-local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
+local store_publisher = 'stable-291';
 local python = '3.12-slim-bookworm';
 local distro_default = 'bookworm';
 local distros = ['bookworm'];
@@ -166,53 +166,16 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
-        name: 'upload',
-        image: 'debian:' + debian,
+        name: 'publish',
+        image: 'syncloud/store-publisher:' + store_publisher,
         environment: {
-          AWS_ACCESS_KEY_ID: {
-            from_secret: 'AWS_ACCESS_KEY_ID',
-          },
-          AWS_SECRET_ACCESS_KEY: {
-            from_secret: 'AWS_SECRET_ACCESS_KEY',
-          },
           SYNCLOUD_TOKEN: {
             from_secret: 'SYNCLOUD_TOKEN',
           },
         },
-        commands: [
-          'PACKAGE=$(cat package.name)',
-          'apt update && apt install -y wget',
-          'wget ' + deployer + '-' + arch + ' -O release --progress=dot:giga',
-          'chmod +x release',
-          './release publish -f $PACKAGE -b $DRONE_BRANCH',
-        ],
+        command: ['snap', '-c', '${DRONE_BRANCH}'],
         when: {
-          branch: ['stable', 'master'],
-          event: ['push'],
-        },
-      },
-      {
-        name: 'promote',
-        image: 'debian:' + debian,
-        environment: {
-          AWS_ACCESS_KEY_ID: {
-            from_secret: 'AWS_ACCESS_KEY_ID',
-          },
-          AWS_SECRET_ACCESS_KEY: {
-            from_secret: 'AWS_SECRET_ACCESS_KEY',
-          },
-          SYNCLOUD_TOKEN: {
-            from_secret: 'SYNCLOUD_TOKEN',
-          },
-        },
-        commands: [
-          'apt update && apt install -y wget',
-          'wget ' + deployer + '-' + arch + ' -O release --progress=dot:giga',
-          'chmod +x release',
-          './release promote -n ' + name + ' -a $(dpkg --print-architecture)',
-        ],
-        when: {
-          branch: ['stable'],
+          branch: ['master', 'stable'],
           event: ['push'],
         },
       },
@@ -261,6 +224,7 @@ local build(arch, test_ui, dind) = [
         name: name + '.' + distro + '.com',
         image: 'syncloud/platform-' + distro + '-' + arch + ':' + platform,
         privileged: true,
+        entrypoint: ['/bin/sh', '-c', "mkdir -p /etc/systemd/system/snapd.service.d && printf '[Service]\\nExecStartPost=/bin/sh -c \"/usr/bin/snap set system refresh.hold=2099-01-01T00:00:00Z\"\\n' > /etc/systemd/system/snapd.service.d/disable-refresh.conf && exec /sbin/init"],
         volumes: [
           {
             name: 'dbus',
@@ -292,40 +256,6 @@ local build(arch, test_ui, dind) = [
         temp: {},
       },
     ],
-  },
-  {
-    kind: 'pipeline',
-    type: 'docker',
-    name: 'promote-' + arch,
-    platform: {
-      os: 'linux',
-      arch: arch,
-    },
-    steps: [
-      {
-        name: 'promote',
-        image: 'debian:buster-slim',
-        environment: {
-          AWS_ACCESS_KEY_ID: {
-            from_secret: 'AWS_ACCESS_KEY_ID',
-          },
-          AWS_SECRET_ACCESS_KEY: {
-            from_secret: 'AWS_SECRET_ACCESS_KEY',
-          },
-        },
-        commands: [
-          'apt update && apt install -y wget',
-          'wget https://github.com/syncloud/snapd/releases/download/1/syncloud-release-' + arch + ' -O release --progress=dot:giga',
-          'chmod +x release',
-          './release promote -n ' + name + ' -a $(dpkg --print-architecture)',
-        ],
-      },
-    ],
-    trigger: {
-      event: [
-        'promote',
-      ],
-    },
   },
 ];
 
