@@ -1,7 +1,5 @@
 import { Page, expect } from '@playwright/test'
 
-// element-web 1.12 shows transient overlays (unsupported-browser toast,
-// key-storage nag, release announcement) whose backdrops intercept clicks.
 const dismissSelectors = [
   ".mx_Toast_toast button:has-text('Dismiss')",
   ".mx_Toast_toast button:has-text('OK')",
@@ -35,9 +33,6 @@ export async function login(page: Page, user: string, password: string) {
   await dismissOverlays(page)
 }
 
-// The compose button opens a Radix menu; a one-time "Introducing Sections"
-// announcement can cover the top item. Retry open + dismiss until the item
-// is clickable.
 export async function composeMenu(page: Page, item: string) {
   await dismissOverlays(page)
   const compose = page.getByRole('button', { name: 'New conversation', exact: true })
@@ -95,7 +90,6 @@ export async function bridgeBot(page: Page, bridge: string, appDomain: string) {
       await button.click()
     }
   }
-  // Re-send help until the bot answers with its Administration help section.
   await expect(async () => {
     await dismissOverlays(page)
     const box = composer(page)

@@ -24,9 +24,6 @@ if [ -n "$APP_IP" ]; then
   echo "$APP_IP auth.$PLAYWRIGHT_FULL_DOMAIN" >> /etc/hosts
 fi
 
-# Trust the Syncloud platform CA so the device cert is valid: a genuine
-# secure context lets element-web's media service worker register (avoids
-# the "failed to load service worker" toast) instead of masking it.
 CA=/tmp/syncloud.ca.crt
 SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
 sshpass -p "$PLAYWRIGHT_SSH_PASSWORD" scp $SSH_OPTS \
