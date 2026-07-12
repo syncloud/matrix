@@ -14,7 +14,5 @@ sed -i "s/{TELEGRAM_API_ID}/$TELEGRAM_API_ID/g" $CONFIG
 sed -i "s/{TELEGRAM_API_HASH}/$TELEGRAM_API_HASH/g" $CONFIG
 
 BUILD_DIR=${DIR}/../build/snap
-wget "https://mau.dev/mautrix/telegramgo/-/jobs/artifacts/$VERSION/download?job=build%20$ARCH%20v2" -O telegram.zip
-unzip telegram.zip
-mv mautrix-telegram $BUILD_DIR/bin/telegram
+wget "https://github.com/mautrix/telegram/releases/download/v$VERSION/mautrix-telegram-$ARCH" -O $BUILD_DIR/bin/telegram
 chmod +x $BUILD_DIR/bin/telegram

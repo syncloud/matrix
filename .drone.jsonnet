@@ -4,14 +4,14 @@ local nginx = '1.24.0';
 local go = '1.24.3-bullseye';
 local postgresql = '16-bullseye';
 local platform = '26.03';
-local selenium = '4.35.0-20250828';
+local playwright = 'mcr.microsoft.com/playwright:v1.48.2-jammy';
 local dendrite = 'main';
-local whatsapp = '0.2601.0';
-local web_version = '1.11.103';
-local signal = '0.8.3';
-local discord = '0.7.3';
-local slack = '0.2.1';
-local telegram = 'main';
+local whatsapp = '0.2606.0';
+local web_version = '1.12.23';
+local signal = '0.2606.0';
+local discord = '0.7.6';
+local slack = '0.2606.0';
+local telegram = '0.2606.0';
 local alpine = '3.22.0';
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
 local python = '3.12-slim-bookworm';
@@ -148,59 +148,12 @@ local build(arch, test_ui, dind) = [
       for distro in distros
     ] + (if test_ui then [
            {
-             name: 'selenium',
-             image: 'selenium/standalone-' + browser + ':' + selenium,
-             detach: true,
-             environment: {
-               SE_NODE_SESSION_TIMEOUT: '999999',
-               START_XVFB: 'true',
-             },
-             volumes: [{
-               name: 'shm',
-               path: '/dev/shm',
-             }],
-             commands: [
-               'cat /etc/hosts',
-               'DOMAIN="' + distro_default + '.com"',
-               'APP_DOMAIN="' + name + '.' + distro_default + '.com"',
-               'getent hosts $APP_DOMAIN | sed "s/$APP_DOMAIN/auth.$DOMAIN/g" | sudo tee -a /etc/hosts',
-               'cat /etc/hosts',
-               '/opt/bin/entry_point.sh',
-             ],
-           },
-           {
-             name: 'selenium-video',
-             image: 'selenium/video:ffmpeg-6.1.1-20240621',
-             detach: true,
-             environment: {
-               DISPLAY_CONTAINER_NAME: 'selenium',
-               FILE_NAME: 'video.mkv',
-             },
-             volumes: [
-               {
-                 name: 'shm',
-                 path: '/dev/shm',
-               },
-               {
-                 name: 'videos',
-                 path: '/videos',
-               },
-             ],
-           },
-           {
              name: 'test-ui',
-             image: 'python:' + python,
+             image: playwright,
              commands: [
-               'cd test',
-               './deps.sh',
-               'py.test -x -s ui.py --distro=' + distro_default + ' --ui-mode=desktop --domain=' + distro_default + '.com --device-host=' + name + '.' + distro_default + '.com --app=' + name + ' --browser-height=2000 --browser=' + browser,
+               './test/e2e/run.sh ' + distro_default + ' specs desktop',
              ],
-             volumes: [{
-               name: 'videos',
-               path: '/videos',
-             }],
            },
-
          ] else []) + [
       {
         name: 'test-upgrade',
@@ -289,7 +242,6 @@ local build(arch, test_ui, dind) = [
     trigger: {
       event: [
         'push',
-        'pull_request',
       ],
     },
     services: [
@@ -336,15 +288,7 @@ local build(arch, test_ui, dind) = [
         },
       },
       {
-        name: 'shm',
-        temp: {},
-      },
-      {
         name: 'dockersock',
-        temp: {},
-      },
-      {
-        name: 'videos',
         temp: {},
       },
     ],
