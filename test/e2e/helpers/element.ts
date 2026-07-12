@@ -91,12 +91,14 @@ export async function bridgeBot(page: Page, bridge: string, appDomain: string) {
     }
   }
   await dismissOverlays(page)
+  const box = composer(page)
+  await box.fill('help')
+  await box.press('Enter')
   const botJoined = page
     .locator('.mx_EventTile, .mx_GenericEventListSummary')
     .filter({ hasText: /joined/i })
     .filter({ hasText: /bot/i })
   await expect(botJoined.first()).toBeVisible({ timeout: 60_000 })
-  const box = composer(page)
   await box.fill('help')
   await box.press('Enter')
   await expect(page.getByRole('heading', { name: 'Administration', exact: true })).toBeVisible({ timeout: 30_000 })
