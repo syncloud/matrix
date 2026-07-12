@@ -1,8 +1,8 @@
 import { execFileSync } from 'node:child_process'
 
-export const deviceHost = process.env.PLAYWRIGHT_DEVICE_HOST ?? process.env.PLAYWRIGHT_FULL_DOMAIN ?? 'bookworm.com'
-export const sshUser = process.env.PLAYWRIGHT_SSH_USER ?? 'root'
-export const sshPassword = process.env.PLAYWRIGHT_SSH_PASSWORD ?? 'Password1'
+export const deviceHost = process.env.PLAYWRIGHT_DEVICE_HOST!
+export const sshUser = process.env.PLAYWRIGHT_SSH_USER!
+export const sshPassword = process.env.PLAYWRIGHT_SSH_PASSWORD!
 
 const baseArgs = [
   '-o', 'StrictHostKeyChecking=no',

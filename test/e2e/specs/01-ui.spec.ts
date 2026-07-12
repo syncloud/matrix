@@ -5,9 +5,9 @@ import { shoot } from '../helpers/screenshot'
 import * as el from '../helpers/element'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
-const user = process.env.PLAYWRIGHT_DEVICE_USER ?? 'user'
-const password = process.env.PLAYWRIGHT_DEVICE_PASSWORD ?? 'Password1'
-const appDomain = process.env.PLAYWRIGHT_APP_DOMAIN ?? 'matrix.bookworm.com'
+const user = process.env.PLAYWRIGHT_DEVICE_USER!
+const password = process.env.PLAYWRIGHT_DEVICE_PASSWORD!
+const appDomain = process.env.PLAYWRIGHT_APP_DOMAIN!
 const bridges = ['whatsapp', 'telegram', 'signal', 'slack', 'discord']
 
 test('matrix element-web ui', async ({ page }, testInfo) => {

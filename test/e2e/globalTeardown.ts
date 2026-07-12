@@ -4,10 +4,10 @@ import * as fs from 'node:fs'
 import { execSync } from 'node:child_process'
 
 const TMP_DIR = '/tmp/syncloud/matrix-ui'
-const artifactRoot = process.env.PLAYWRIGHT_ARTIFACT_DIR ?? 'artifact'
+const artifactRoot = process.env.PLAYWRIGHT_ARTIFACT_DIR!
 
 export default async function () {
-  const project = process.env.PLAYWRIGHT_PROJECT ?? 'desktop'
+  const project = process.env.PLAYWRIGHT_PROJECT!
   const out = path.join(artifactRoot, 'playwright', project)
   fs.mkdirSync(out, { recursive: true })
 
