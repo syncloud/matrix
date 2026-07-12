@@ -3,8 +3,8 @@ DIR=$(cd "$(dirname "$0")" && pwd)
 cd "$DIR"
 
 ARTIFACT_SUBDIR=$1
-SPEC=${2:-specs}
-PROJECT=${3:-desktop}
+SPEC=$2
+PROJECT=$3
 
 export PLAYWRIGHT_FULL_DOMAIN=bookworm.com
 export PLAYWRIGHT_APP_DOMAIN=matrix.bookworm.com
