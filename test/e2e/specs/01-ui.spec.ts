@@ -26,9 +26,13 @@ test('matrix element-web ui', async ({ page }, testInfo) => {
 
   await el.uploadFile(page, path.join(here, '..', '..', 'images', 'profile.jpeg'))
   await shoot(page, testInfo, 'image')
+})
 
-  for (const bridge of bridges) {
+for (const bridge of bridges) {
+  test(`bridge ${bridge}`, async ({ page }, testInfo) => {
+    await page.goto('/')
+    await el.login(page, user, password)
     await el.bridgeBot(page, bridge, appDomain)
     await shoot(page, testInfo, `${bridge}-bot`)
-  }
-})
+  })
+}
