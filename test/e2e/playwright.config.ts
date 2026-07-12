@@ -12,7 +12,7 @@ export default defineConfig({
   reporter: [['list']],
   outputDir: `${artifactDir}/playwright/test-results`,
   globalTeardown: './globalTeardown.ts',
-  timeout: 240_000,
+  timeout: 900_000,
   expect: { timeout: 30_000 },
   use: {
     baseURL: `https://${appDomain}`,

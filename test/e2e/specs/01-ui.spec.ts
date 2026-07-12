@@ -1,4 +1,4 @@
-import { test } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { shoot } from '../helpers/screenshot'
@@ -26,13 +26,16 @@ test('matrix element-web ui', async ({ page }, testInfo) => {
 
   await el.uploadFile(page, path.join(here, '..', '..', 'images', 'profile.jpeg'))
   await shoot(page, testInfo, 'image')
-})
 
-for (const bridge of bridges) {
-  test(`bridge ${bridge}`, async ({ page }, testInfo) => {
-    await page.goto('/')
-    await el.login(page, user, password)
-    await el.bridgeBot(page, bridge, appDomain)
-    await shoot(page, testInfo, `${bridge}-bot`)
-  })
-}
+  const failed: string[] = []
+  for (const bridge of bridges) {
+    try {
+      await el.bridgeBot(page, bridge, appDomain)
+      await shoot(page, testInfo, `${bridge}-bot`)
+    } catch {
+      failed.push(bridge)
+      await shoot(page, testInfo, `${bridge}-bot-failed`)
+    }
+  }
+  expect(failed, `bridges failed: ${failed.join(', ')}`).toEqual([])
+})
