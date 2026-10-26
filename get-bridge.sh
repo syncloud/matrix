@@ -8,5 +8,5 @@ BRIDGE=$3
 BUILD_DIR=${DIR}/build/snap
 mkdir -p ${BUILD_DIR}
 
-wget https://github.com/mautrix/$BRIDGE/releases/download/v$VERSION/mautrix-$BRIDGE-$ARCH -O $BUILD_DIR/bin/$BRIDGE
+${DIR}/download.sh https://github.com/mautrix/$BRIDGE/releases/download/v$VERSION/mautrix-$BRIDGE-$ARCH $BUILD_DIR/bin/$BRIDGE
 chmod +x $BUILD_DIR/bin/$BRIDGE

@@ -1,3 +1,4 @@
 screenshot
 firefox
 *.xpi
+__pycache__

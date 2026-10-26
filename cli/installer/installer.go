@@ -11,6 +11,7 @@ import (
 
 	"os"
 	"path"
+	"strings"
 )
 
 const App = "matrix"
@@ -21,6 +22,9 @@ type Variables struct {
 	CommonDir    string
 	DatabaseDir  string
 	DatabasePort int
+	StorageDir   string
+	AuthUrl      string
+	AuthSocket   string
 	Domain       string
 	Url          string
 }
@@ -31,6 +35,7 @@ type Installer struct {
 	configDir          string
 	platformClient     *platform.Client
 	database           *Database
+	dendrite           *Dendrite
 	installFile        string
 	executor           *Executor
 	appDir             string
@@ -46,12 +51,14 @@ func New(logger *zap.Logger) *Installer {
 	commonDir := fmt.Sprintf("/var/snap/%s/common", App)
 	configDir := path.Join(dataDir, "config")
 	executor := NewExecutor(logger)
+	database := NewDatabase(appDir, dataDir, configDir, App, executor, logger)
 	return &Installer{
 		newVersionFile:     path.Join(appDir, "version"),
 		currentVersionFile: path.Join(dataDir, "version"),
 		configDir:          configDir,
 		platformClient:     platform.New(),
-		database:           NewDatabase(appDir, dataDir, configDir, App, executor, logger),
+		database:           database,
+		dendrite:           NewDendrite(appDir, dataDir, configDir, database, executor, logger),
 		installFile:        path.Join(commonDir, "installed"),
 		executor:           executor,
 		appDir:             appDir,
@@ -69,17 +76,7 @@ func New(logger *zap.Logger) *Installer {
 }
 
 func (i *Installer) Install() error {
-
-	err := i.executor.Run(
-		path.Join(i.appDir, "bin/generate-keys"),
-		"--private-key",
-		path.Join(i.dataDir, "private_key.pem"),
-	)
-	if err != nil {
-		return err
-	}
-
-	err = i.UpdateConfigs()
+	err := i.UpdateConfigs()
 	if err != nil {
 		return err
 	}
@@ -157,8 +154,6 @@ func (i *Installer) Initialize() error {
 
 func (i *Installer) CreateDBs() error {
 	dbs := map[string]bool{
-		"matrix":   false,
-		"sync":     false,
 		"whatsapp": false,
 		"telegram": false,
 		"signal":   true, //recreate db (unable to migrate)
@@ -195,7 +190,11 @@ func (i *Installer) Upgrade() error {
 	if err != nil {
 		return err
 	}
-	return nil
+	storageDir, err := i.platformClient.InitStorage(App, App)
+	if err != nil {
+		return err
+	}
+	return i.dendrite.Migrate(storageDir)
 }
 
 func (i *Installer) PreRefresh() error {
@@ -268,7 +267,11 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
-	err = i.StorageChange()
+	storageDir, err := i.platformClient.InitStorage(App, App)
+	if err != nil {
+		return err
+	}
+	err = linux.Chown(storageDir, App)
 	if err != nil {
 		return err
 	}
@@ -283,12 +286,20 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
+	authUrl, err := i.platformClient.GetAppUrl("auth")
+	if err != nil {
+		return err
+	}
+
 	variables := Variables{
 		AppDir:       i.appDir,
 		CommonDir:    i.commonDir,
 		DataDir:      i.dataDir,
 		DatabaseDir:  i.database.DatabaseDir(),
 		DatabasePort: 5436,
+		StorageDir:   storageDir,
+		AuthUrl:      authUrl,
+		AuthSocket:   strings.TrimSuffix(strings.TrimPrefix(i.platformClient.GetAuthLocalSocket(), "http://unix:"), ":"),
 		Domain:       domain,
 		Url:          url,
 	}
@@ -304,9 +315,15 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
+	err = i.RegisterOIDC()
+	if err != nil {
+		return err
+	}
+
 	err = linux.CreateMissingDirs(
 		path.Join(i.dataDir, "nginx"),
 		path.Join(i.dataDir, "data"),
+		path.Join(i.dataDir, "appservices"),
 	)
 	if err != nil {
 		return err
@@ -328,12 +345,25 @@ func (i *Installer) UpdateConfigs() error {
 
 }
 
+func (i *Installer) RegisterOIDC() error {
+	secret, err := i.platformClient.RegisterOIDCClient(
+		App,
+		[]string{fmt.Sprintf("/_matrix/client/unstable/login/sso/callback/%s", App)},
+		false,
+		"client_secret_post",
+	)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path.Join(i.configDir, "oidc.secret"), []byte(secret), 0600)
+}
+
 func (i *Installer) RegisterGoBridge(bridge string) error {
 	return i.executor.Run(
 		path.Join(i.appDir, "bin", bridge),
 		"-g",
 		"-c", path.Join(i.configDir, fmt.Sprint(bridge, ".yaml")),
-		"-r", path.Join(i.configDir, fmt.Sprint(bridge, "-registration.yaml")),
+		"-r", path.Join(i.dataDir, "appservices", fmt.Sprint(bridge, ".yaml")),
 	)
 }
 
