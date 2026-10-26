@@ -17,6 +17,7 @@ export default defineConfig({
   use: {
     baseURL: `https://${appDomain}`,
     ignoreHTTPSErrors: true,
+    actionTimeout: 60_000,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'on',
