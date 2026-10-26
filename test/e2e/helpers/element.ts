@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test'
+import * as authelia from './authelia'
 
 const dismissSelectors = [
   ".mx_Toast_toast button:has-text('Dismiss')",
@@ -21,16 +22,6 @@ export async function dismissOverlays(page: Page) {
     }
     if (!clicked) break
   }
-}
-
-export async function login(page: Page, user: string, password: string) {
-  await page.getByRole('link', { name: 'Sign in' }).click()
-  await page.locator('#mx_LoginForm_username').fill(user)
-  const password_field = page.locator('#mx_LoginForm_password')
-  await password_field.fill(password)
-  await password_field.press('Enter')
-  await expect(page.getByRole('heading', { name: /Welcome user/ })).toBeVisible({ timeout: 60_000 })
-  await dismissOverlays(page)
 }
 
 export async function composeMenu(page: Page, item: string) {
@@ -102,4 +93,14 @@ export async function bridgeBot(page: Page, bridge: string, appDomain: string) {
   await box.fill('help')
   await box.press('Enter')
   await expect(page.getByRole('heading', { name: 'Administration', exact: true })).toBeVisible({ timeout: 30_000 })
+}
+
+export async function ssoLogin(page: Page, user: string, password: string, expectedUserId: string) {
+  await page.getByRole('link', { name: 'Sign in' }).click()
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await authelia.signIn(page, user, password)
+  await authelia.approveIfAsked(page)
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem('mx_user_id')).catch(() => null), { timeout: 120_000 })
+    .toBe(expectedUserId)
 }

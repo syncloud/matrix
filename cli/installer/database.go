@@ -79,6 +79,22 @@ func (d *Database) Execute(database string, sql string) error {
 	)
 }
 
+func (d *Database) Export(database string, file string, query string) error {
+	return d.executor.Run("snap",
+		"run", fmt.Sprint(App, ".psql"),
+		"-X", "-A", "-t",
+		"-v", "ON_ERROR_STOP=1",
+		"-U", d.user,
+		"-d", database,
+		"-o", file,
+		"-c", query,
+	)
+}
+
+func (d *Database) Drop(database string) error {
+	return d.Execute("postgres", fmt.Sprintf("DROP DATABASE IF EXISTS %s", database))
+}
+
 func (d *Database) Restore() error {
 	return d.executor.Run("snap",
 		"run", fmt.Sprint(App, ".psql"),

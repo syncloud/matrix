@@ -1,0 +1,41 @@
+[global]
+server_name = "{{{ .Domain }}}"
+database_path = "{{{ .DataDir }}}/tuwunel"
+unix_socket_path = "{{{ .DataDir }}}/matrix.socket"
+unix_socket_perms = 660
+max_request_size = 104857600
+allow_registration = false
+login_with_password = false
+allow_guest_registration = false
+allow_federation = true
+allow_encryption = true
+trusted_servers = ["matrix.org"]
+allow_local_presence = false
+allow_incoming_presence = false
+allow_outgoing_presence = false
+appservice_dir = "{{{ .DataDir }}}/appservices"
+log = "info"
+log_colors = false
+
+[global.storage_provider.media.local]
+base_path = "{{{ .StorageDir }}}/tuwunel/media"
+create_if_missing = true
+
+[global.well_known]
+client = "https://{{{ .Domain }}}"
+server = "{{{ .Domain }}}:443"
+
+[[global.identity_provider]]
+brand = "authelia"
+name = "Syncloud"
+client_id = "matrix"
+client_secret_file = "{{{ .DataDir }}}/config/oidc.secret"
+issuer_url = "{{{ .AuthUrl }}}"
+callback_url = "https://{{{ .Domain }}}/_matrix/client/unstable/login/sso/callback/matrix"
+unix_socket = "{{{ .AuthSocket }}}"
+default = true
+trusted = true
+userid_claims = ["preferred_username"]
+scope = ["openid", "profile", "email", "groups"]
+admin_groups = ["syncloud"]
+unique_id_fallbacks = false

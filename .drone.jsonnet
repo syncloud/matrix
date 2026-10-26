@@ -3,15 +3,16 @@ local browser = 'firefox';
 local nginx = '1.24.0';
 local go = '1.24.3-bullseye';
 local postgresql = '16-bullseye';
-local platform = '26.03';
+local platform = '26.09.02';
 local playwright = 'mcr.microsoft.com/playwright:v1.48.2-jammy';
-local dendrite = 'main';
-local whatsapp = '0.2606.0';
+local tuwunel = '1.9.4-syncloud.10';
+local whatsapp = '0.2610.0';
 local web_version = '1.12.23';
-local signal = '0.2606.0';
-local discord = '0.7.6';
-local slack = '0.2606.0';
-local telegram = '0.2606.0';
+local signal = '0.2610.0';
+local discord = 'bf7bb1190eeae119a66c00a2e0fe59a24bb6a22b';
+local go_discord = '1.27-alpine';
+local slack = '0.2610.0';
+local telegram = '0.2610.0';
 local alpine = '3.22.0';
 local store_publisher = 'stable-346';
 local python = '3.12-slim-bookworm';
@@ -45,7 +46,7 @@ local build(arch, test_ui, dind) = [
       },
       {
         name: 'nginx test',
-        image: 'syncloud/platform-' + distro_default + '-' + arch + ':' + platform,
+        image: 'syncloud/platform-' + distro_default + ':' + platform,
         commands: [
           './nginx/test.sh',
         ],
@@ -99,17 +100,17 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
-        name: 'dendrite',
-        image: 'golang:' + go,
+        name: 'tuwunel',
+        image: 'alpine:' + alpine,
         commands: [
-          './dendrite/build.sh ' + dendrite,
+          './tuwunel/build.sh ' + tuwunel + ' ' + arch,
         ],
       },
       {
         name: 'discord',
-        image: 'alpine:' + alpine,
+        image: 'golang:' + go_discord,
         commands: [
-          './get-bridge.sh ' + discord + ' ' + arch + ' discord',
+          './discord/build.sh ' + discord,
         ],
       },
       {
@@ -222,7 +223,7 @@ local build(arch, test_ui, dind) = [
     ] + [
       {
         name: name + '.' + distro + '.com',
-        image: 'syncloud/platform-' + distro + '-' + arch + ':' + platform,
+        image: 'syncloud/platform-' + distro + ':' + platform,
         privileged: true,
         entrypoint: ['/bin/sh', '-c', "mkdir -p /etc/systemd/system/snapd.service.d && printf '[Service]\\nExecStartPost=/bin/sh -c \"/usr/bin/snap set system refresh.hold=2099-01-01T00:00:00Z\"\\n' > /etc/systemd/system/snapd.service.d/disable-refresh.conf && exec /sbin/init"],
         volumes: [

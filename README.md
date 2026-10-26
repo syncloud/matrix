@@ -11,29 +11,47 @@ Listed on the Matrix [distributions page](https://matrix.org/ecosystem/distribut
 
 | Component | Role |
 | --- | --- |
-| [Dendrite](https://github.com/cyberb/dendrite) (patched fork) | Matrix homeserver |
+| [Tuwunel](https://github.com/cyberb/tuwunel) (fork with a Dendrite importer) | Matrix homeserver |
 | [Element Web](https://github.com/element-hq/element-web) | Web client, served at the app's domain |
-| PostgreSQL | Homeserver and bridge database |
+| PostgreSQL | Bridge database |
 | nginx | Reverse proxy, serves the client and the `.well-known` delegation endpoints |
 | [mautrix-whatsapp](https://github.com/mautrix/whatsapp) | WhatsApp bridge |
 | [mautrix-telegram](https://github.com/mautrix/telegram) | Telegram bridge |
 | [mautrix-signal](https://github.com/mautrix/signal) | Signal bridge |
 | [mautrix-slack](https://github.com/mautrix/slack) | Slack bridge |
-| [mautrix-discord](https://github.com/mautrix/discord) | Discord bridge |
+| [mautrix-discord](https://github.com/mautrix/discord) (`megadiscord` branch, bridgev2) | Discord bridge |
 
 Exact pinned versions are defined at the top of [`.drone.jsonnet`](.drone.jsonnet).
 
-### Dendrite fork
+### Tuwunel fork
 
-The homeserver is built from [cyberb/dendrite](https://github.com/cyberb/dendrite), a
-fork of [element-hq/dendrite](https://github.com/element-hq/dendrite) carrying patches
-that are not upstream:
+The homeserver is [Tuwunel](https://github.com/matrix-construct/tuwunel), built from
+[cyberb/tuwunel](https://github.com/cyberb/tuwunel) (`syncloud` branch). The only
+addition is a `server import-dendrite` admin command used once to upgrade existing
+installs in place from the previous Dendrite homeserver: the signing key, accounts,
+devices and access tokens, profiles, account data, end-to-end keys and key backups,
+rooms with their history and state, aliases and media are carried over.
 
-- native sliding sync (MSC4186), with MSC3266 room summary and MSC4115 membership
-- LDAP authentication
-- MSC3706 partial-state federation join fix
-- appservice namespace authorisation fix, so bridges do not fail at startup
-- advertises spec v1.3 and v1.4
+The fork also lets Tuwunel reach bridges and the identity provider over unix sockets,
+and maps the identity provider's `groups` claim to server admins.
+
+Tuwunel provides native sliding sync. It stores its data in RocksDB under `$SNAP_DATA`;
+media lives on app storage. All local traffic (nginx, bridges, Authelia, PostgreSQL)
+goes over unix sockets.
+
+### Sign-in
+
+Sign-in goes through the platform's Authelia only; password login on the homeserver
+is disabled, so Authelia's two-factor policy applies to every new session.
+
+- **Element X** and other next-gen-auth clients use Tuwunel's built-in OAuth server,
+  which brokers to Authelia and asks the user to approve each new app once.
+- **Element Web/Android/iOS, FluffyChat** and other SSO clients show "Continue with
+  Syncloud" and open the browser for Authelia.
+- Members of the platform's `syncloud` group are server admins; this follows the
+  group on every sign-in.
+
+Sessions carried over from Dendrite keep working without signing in again.
 
 Not included: MatrixRTC (LiveKit SFU, `lk-jwt-service`, Element Call). Group calls are
 not available; only 1:1 WebRTC calls between clients that support them.
@@ -46,8 +64,8 @@ Install Syncloud on your device, then install Matrix from the app store. See the
 [Syncloud platform](https://github.com/syncloud/platform) repository and
 [syncloud.org](https://syncloud.org) for supported devices and setup.
 
-The app is packaged as a snap. It runs under strict confinement and keeps all state in
-`$SNAP_DATA`, so it participates in the platform's backup and restore.
+The app is packaged as a snap and keeps all state in `$SNAP_DATA`, so it participates
+in the platform's backup and restore.
 
 ## Build
 

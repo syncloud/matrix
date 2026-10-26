@@ -1,3 +1,2 @@
 export PSQL_PORT={{{ .DatabasePort }}}
 export PSQL_DATABASE={{{ .DatabaseDir }}}
-export SYNCV3_DB='postgresql://matrix:matrix@/sync?host={{{ .DatabaseDir }}}&port={{{ .DatabasePort }}}'

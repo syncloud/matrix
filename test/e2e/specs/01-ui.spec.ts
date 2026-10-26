@@ -14,7 +14,9 @@ test('matrix element-web ui', async ({ page }, testInfo) => {
   await page.goto('/')
   await shoot(page, testInfo, 'welcome')
 
-  await el.login(page, user, password)
+  await el.ssoLogin(page, user, password, `@${user}:${appDomain}`)
+  await expect(page.getByRole('heading', { name: /Welcome user/ })).toBeVisible({ timeout: 60_000 })
+  await el.dismissOverlays(page)
   await shoot(page, testInfo, 'main')
 
   await el.createRoom(page, 'testroom')
