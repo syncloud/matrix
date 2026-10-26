@@ -2,10 +2,10 @@ import { Page, expect } from '@playwright/test'
 import * as authelia from './authelia'
 
 const dismissSelectors = [
+  ".mx_Dialog button:has-text('Yes, dismiss')",
+  ".mx_Dialog button:has-text('Ok')",
   ".mx_Toast_toast button:has-text('Dismiss')",
   ".mx_Toast_toast button:has-text('OK')",
-  "button:has-text('Yes, dismiss')",
-  ".mx_Dialog button:has-text('Ok')",
 ]
 
 export async function dismissOverlays(page: Page) {
@@ -14,7 +14,7 @@ export async function dismissOverlays(page: Page) {
     for (const selector of dismissSelectors) {
       const button = page.locator(selector).first()
       if (await button.isVisible().catch(() => false)) {
-        await button.click().catch(() => {})
+        await button.click({ timeout: 5_000 }).catch(() => {})
         await page.waitForTimeout(500)
         clicked = true
         break
