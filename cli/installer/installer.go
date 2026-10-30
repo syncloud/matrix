@@ -1,6 +1,8 @@
 package installer
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"github.com/google/uuid"
 	cp "github.com/otiai10/copy"
@@ -320,8 +322,13 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
+	err = i.SetLiveKitKeys()
+	if err != nil {
+		return err
+	}
+
 	err = linux.CreateMissingDirs(
-		path.Join(i.dataDir, "nginx"),
+		path.Join(i.dataDir, "caddy"),
 		path.Join(i.dataDir, "data"),
 		path.Join(i.dataDir, "appservices"),
 	)
@@ -411,4 +418,21 @@ func (i *Installer) SetSyncSecret() error {
 		return err
 	}
 	return nil
+}
+
+func (i *Installer) SetLiveKitKeys() error {
+	file := path.Join(i.dataDir, "livekit.keys")
+	_, err := os.Stat(file)
+	if err == nil {
+		return nil
+	}
+	if !os.IsNotExist(err) {
+		return err
+	}
+	secret := make([]byte, 32)
+	_, err = rand.Read(secret)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(file, []byte(fmt.Sprintf("%s: %s\n", App, hex.EncodeToString(secret))), 0600)
 }

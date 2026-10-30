@@ -3,73 +3,71 @@ apps:
     user: matrix
     command: bin/service.postgresql.sh
     daemon: forking
-    plugs:
-    - network
-    - network-bind
     restart-condition: always
-    
-  nginx:
-    command: bin/service.nginx.sh
+    restart-delay: 10s
+
+  caddy:
+    command: bin/service.caddy.sh
     user: matrix
     daemon: simple
-    plugs:
-    - network
-    - network-bind
     restart-condition: always
+    restart-delay: 10s
 
   matrix:
     command: bin/service.matrix.sh
     user: matrix
     daemon: simple
-    plugs:
-    - network
-    - network-bind
     restart-condition: always
+    restart-delay: 10s
 
   whatsapp:
     command: bin/service.whatsapp.sh
     user: matrix
     daemon: simple
-    plugs:
-      - network
-      - network-bind
     restart-condition: always
+    restart-delay: 10s
 
   telegram:
     command: bin/service.telegram.sh
     user: matrix
     daemon: simple
-    plugs:
-      - network
-      - network-bind
     restart-condition: always
+    restart-delay: 10s
 
   signal:
     command: bin/service.signal.sh
     user: matrix
     daemon: simple
-    plugs:
-      - network
-      - network-bind
     restart-condition: always
+    restart-delay: 10s
 
   slack:
     command: bin/service.slack.sh
     user: matrix
     daemon: simple
-    plugs:
-      - network
-      - network-bind
     restart-condition: always
+    restart-delay: 10s
 
   discord:
     command: bin/service.discord.sh
     user: matrix
     daemon: simple
-    plugs:
-      - network
-      - network-bind
     restart-condition: always
+    restart-delay: 10s
+
+  livekit:
+    command: bin/service.livekit.sh
+    user: matrix
+    daemon: simple
+    restart-condition: always
+    restart-delay: 10s
+
+  livekit-jwt:
+    command: bin/service.livekit-jwt.sh
+    user: matrix
+    daemon: simple
+    restart-condition: always
+    restart-delay: 10s
 
   psql:
     command: bin/psql.sh
@@ -92,7 +90,6 @@ apps:
   restore-post-start:
     command: bin/cli restore-post-start
 
-confinement: strict
 description: An open network for secure, decentralized communication
 grade: stable
 name: matrix

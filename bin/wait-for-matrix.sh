@@ -2,7 +2,7 @@
 
 retry=0
 retries=100
-SOCKET=/var/snap/matrix/current/matrix.socket
+SOCKET=/var/snap/matrix/current/matrix.sock
 while [[ ! -S $SOCKET ]]; do
     if [[ $retry -gt $retries ]]; then
         echo "waiting for matrix socket failed after $retry attempts"

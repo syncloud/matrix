@@ -1,0 +1,25 @@
+unix_socket: {{{ .DataDir }}}/livekit.sock
+rtc:
+  tcp_port: 0
+  port_range_start: 50000
+  port_range_end: 60000
+  use_external_ip: false
+  enable_loopback_candidate: true
+  ips:
+    includes:
+      - 127.0.0.1/32
+turn:
+  enabled: true
+  domain: {{{ .Domain }}}
+  unix_socket: {{{ .DataDir }}}/turn.sock
+  external_tls: true
+  proxy_protocol: true
+  bind_addresses:
+    - 127.0.0.1
+  allow_restricted_peer_cidrs:
+    - 127.0.0.1/32
+room:
+  auto_create: false
+key_file: {{{ .DataDir }}}/livekit.keys
+logging:
+  level: info
