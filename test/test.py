@@ -1,4 +1,5 @@
 import os
+import struct
 import pytest
 import requests
 import shutil
@@ -9,8 +10,12 @@ from syncloudlib.integration.hosts import add_host_alias
 from syncloudlib.integration.installer import local_install
 from syncloudlib.http import wait_for_rest
 from .sso import sso_login, password_login, is_admin
+from . import remote_socket
+from . import snapd
+from .services import SERVICES
 
 TMP_DIR = '/tmp/syncloud'
+DIR = os.path.dirname(__file__)
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -21,6 +26,8 @@ def module_setup(request, device, app_dir, artifact_dir):
         device.run_ssh('ls -la /var/snap/matrix/current/config > {0}/config.ls.log'.format(TMP_DIR), throw=False)
         device.run_ssh('cp /var/snap/matrix/current/config/element.json {0}/element.json.log'.format(TMP_DIR), throw=False)
         device.run_ssh('cp /var/snap/matrix/current/config/tuwunel.toml {0}/tuwunel.toml.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('cp /var/snap/matrix/current/config/livekit.yaml {0}/livekit.yaml.log'.format(TMP_DIR), throw=False)
+        device.run_ssh('cp /var/snap/matrix/current/config/Caddyfile {0}/Caddyfile.log'.format(TMP_DIR), throw=False)
 
         device.run_ssh('cp /var/snap/matrix/current/config/whatsapp.yaml {0}/whatsapp.yaml.log'.format(TMP_DIR), throw=False)
         device.run_ssh('cp /var/snap/matrix/current/appservices/whatsapp.yaml {0}/whatsapp-registration.yaml.log'.format(TMP_DIR), throw=False)
@@ -58,6 +65,7 @@ def test_start(module_setup, device, device_host, app, domain):
     add_host_alias(app, device_host, domain)
     add_host_alias('auth', device_host, domain)
     device.run_ssh('date', retries=100)
+    snapd.settle(device)
     device.run_ssh('mkdir {0}'.format(TMP_DIR))
 
 
@@ -146,6 +154,71 @@ def test_next_gen_auth_advertised(app_domain):
     discovery = requests.get("https://{0}/.well-known/openid-configuration".format(app_domain), verify=False)
     assert discovery.status_code == 200, discovery.text
     assert discovery.json()['issuer'] == metadata.json()['issuer'], discovery.text
+
+
+def test_rtc_transport_advertised(app_domain):
+    expected = {'type': 'livekit', 'livekit_service_url': 'https://{0}/livekit/jwt'.format(app_domain)}
+    well_known = requests.get("https://{0}/.well-known/matrix/client".format(app_domain), verify=False)
+    assert well_known.status_code == 200, well_known.text
+    assert well_known.json()['m.homeserver']['base_url'].rstrip('/') == 'https://{0}'.format(app_domain), well_known.text
+    assert expected in well_known.json()['org.matrix.msc4143.rtc_foci'], well_known.text
+
+
+def test_livekit_token(app_domain, domain, device_user, device_password):
+    wait_for_rest(requests.session(), "https://{0}/livekit/jwt/healthz".format(app_domain), 200, 30)
+    wait_for_rest(requests.session(), "https://{0}/livekit/sfu/".format(app_domain), 200, 30)
+    session = sso_login(app_domain, 'auth.' + domain, device_user, device_password)
+    headers = {'Authorization': 'Bearer ' + session['access_token']}
+    openid = requests.post(
+        "https://{0}/_matrix/client/v3/user/{1}/openid/request_token".format(app_domain, session['user_id']),
+        verify=False, headers=headers, json={})
+    assert openid.status_code == 200, openid.text
+    sfu = requests.post("https://{0}/livekit/jwt/sfu/get".format(app_domain), verify=False, json={
+        'room': '!call:{0}'.format(app_domain),
+        'openid_token': openid.json(),
+        'device_id': session['device_id'],
+    })
+    assert sfu.status_code == 200, sfu.text
+    assert sfu.json()['url'] == 'wss://{0}/livekit/sfu'.format(app_domain), sfu.text
+    validate = requests.get("https://{0}/livekit/sfu/rtc/validate".format(app_domain), verify=False,
+                            params={'access_token': sfu.json()['jwt']})
+    assert validate.status_code == 200, validate.text
+
+
+def stream_probe(device_host, device_password, payload):
+    with remote_socket.forwarded(device_host, device_password, '/var/snap/matrix/common/stream.socket') as port:
+        return remote_socket.exchange(port, payload)
+
+
+def test_stream_socket_serves_http(device_host, device_password, app_domain):
+    request = 'GET /_matrix/client/versions HTTP/1.1\r\nHost: {0}\r\nConnection: close\r\n\r\n'.format(app_domain).encode()
+    reply = stream_probe(device_host, device_password, request)
+    assert reply.startswith(b'HTTP/1.1 200'), reply[:200]
+    assert b'"versions"' in reply, reply[:500]
+
+
+@pytest.mark.parametrize('service', SERVICES)
+def test_service_started_cleanly(device, service):
+    restarts = device.run_ssh('systemctl show -p NRestarts --value snap.matrix.{0}.service'.format(service))
+    assert restarts.strip() == '0', restarts
+
+
+def test_no_tcp_listeners(device):
+    sockets = ['livekit.sock', 'turn.sock', 'livekit-jwt.sock', 'matrix.sock', 'stream-http.sock']
+    types = device.run_ssh('stat -c %F ' + ' '.join('/var/snap/matrix/current/' + name for name in sockets))
+    assert types.splitlines() == ['socket'] * len(sockets), types
+    listeners = device.run_ssh('ss -Hlntup')
+    ours = [line for line in listeners.splitlines() if '"livekit' in line or '"caddy"' in line]
+    assert not [line for line in ours if line.startswith('tcp')], listeners
+    for line in ours:
+        assert line.split()[4].startswith('127.0.0.1:'), line
+
+
+def test_stream_socket_routes_turn_to_livekit(device_host, device_password):
+    binding = struct.pack('!HHI12s', 0x0001, 0, 0x2112A442, os.urandom(12))
+    reply = stream_probe(device_host, device_password, binding)
+    assert reply[0:2] == b'\x01\x01', reply.hex()
+    assert reply[4:8] == b'\x21\x12\xa4\x42', reply.hex()
 
 
 def test_sso_redirects_to_authelia(app_domain, domain):
