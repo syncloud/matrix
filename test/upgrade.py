@@ -9,6 +9,8 @@ from syncloudlib.integration.hosts import add_host_alias
 from syncloudlib.integration.installer import local_install
 from syncloudlib.http import wait_for_rest
 from .sso import sso_login, password_login, is_admin
+from . import snapd
+from .services import SERVICES
 
 TMP_DIR = '/tmp/syncloud'
 BRIDGES = ['whatsapp', 'telegram', 'signal', 'slack', 'discord']
@@ -46,20 +48,11 @@ def api(app_domain, method, path, token=None, **kwargs):
     return response
 
 
-def login(app_domain, user, password):
-    response = api(app_domain, 'POST', '/_matrix/client/v3/login', json={
-        'type': 'm.login.password',
-        'identifier': {'type': 'm.id.user', 'user': user},
-        'password': password,
-    })
-    assert response.status_code == 200, response.text
-    return response.json()
-
-
 def test_start(module_setup, app, device_host, domain, device):
     add_host_alias(app, device_host, domain)
     add_host_alias('auth', device_host, domain)
     device.activated()
+    snapd.settle(device)
     device.run_ssh('rm -rf {0}'.format(TMP_DIR), throw=False)
     device.run_ssh('mkdir {0}'.format(TMP_DIR), throw=False)
 
@@ -70,8 +63,8 @@ def test_install_store_version(device, app_domain):
     wait_for_rest(requests.session(), "https://{0}/_matrix/client/versions".format(app_domain), 200, 60)
 
 
-def test_populate(app_domain, device_user, device_password, state):
-    session = login(app_domain, device_user, device_password)
+def test_populate(app_domain, domain, device_user, device_password, state):
+    session = sso_login(app_domain, 'auth.' + domain, device_user, device_password)
     token = session['access_token']
     user_id = session['user_id']
     state.update(token=token, user_id=user_id, device_id=session['device_id'])
@@ -109,6 +102,12 @@ def test_populate(app_domain, device_user, device_password, state):
 def test_upgrade(device_host, device_password, app_archive_path, app_domain):
     local_install(device_host, device_password, app_archive_path)
     wait_for_rest(requests.session(), "https://{0}/_matrix/client/versions".format(app_domain), 200, 60)
+
+
+@pytest.mark.parametrize('service', SERVICES)
+def test_service_started_cleanly_after_upgrade(device, service):
+    restarts = device.run_ssh('systemctl show -p NRestarts --value snap.matrix.{0}.service'.format(service))
+    assert restarts.strip() == '0', restarts
 
 
 def test_homeserver_is_tuwunel(app_domain):

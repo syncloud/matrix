@@ -278,7 +278,7 @@ homeserver:
     # The address that this appservice can use to connect to the homeserver.
     # Local addresses without HTTPS are generally recommended when the bridge is running on the same machine,
     # but https also works if they run on different machines.
-    address: unix:///var/snap/matrix/current/matrix.socket
+    address: unix:///var/snap/matrix/current/matrix.sock
     # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
     domain: {{{ .Domain }}}
 

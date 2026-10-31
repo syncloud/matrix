@@ -88,10 +88,7 @@ drone jsonnet --stdout --stream > .drone.yml
 Run a specific pipeline with selected steps (e.g. amd64 up to `test bookworm`):
 ```
 drone exec --pipeline amd64 --trusted \
-  --include version \
-  --include nginx \
-  --include "nginx test" \
-  --include hooks \
+  --include caddy \
   --include cli \
   --include package \
   --include "test bookworm" \

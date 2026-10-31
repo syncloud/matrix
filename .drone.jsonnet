@@ -1,9 +1,9 @@
 local name = 'matrix';
 local browser = 'firefox';
-local nginx = '1.24.0';
+local caddy = '2.11.7-syncloud.1';
 local go = '1.24.3-bullseye';
 local postgresql = '16-bullseye';
-local platform = '26.09.02';
+local platform = '26.10.02';
 local playwright = 'mcr.microsoft.com/playwright:v1.48.2-jammy';
 local tuwunel = '1.9.4-syncloud.10';
 local whatsapp = '0.2610.0';
@@ -13,11 +13,13 @@ local discord = 'bf7bb1190eeae119a66c00a2e0fe59a24bb6a22b';
 local go_discord = '1.27-alpine';
 local slack = '0.2610.0';
 local telegram = '0.2610.0';
+local livekit = '1.13.11-syncloud.2';
+local livekit_jwt = '0.9.0-syncloud.1';
 local alpine = '3.22.0';
 local store_publisher = 'stable-346';
 local python = '3.12-slim-bookworm';
 local distro_default = 'bookworm';
-local distros = ['bookworm'];
+local distros = ['bookworm', 'buster'];
 local debian = 'bookworm-slim';
 
 local build(arch, test_ui, dind) = [
@@ -31,38 +33,40 @@ local build(arch, test_ui, dind) = [
     },
     steps: [
       {
-        name: 'version',
-        image: 'debian:' + debian,
+        name: 'caddy',
+        image: 'debian:bookworm-slim',
         commands: [
-          'echo $DRONE_BUILD_NUMBER > version',
+          'apt-get update -qq && apt-get install -y -qq wget ca-certificates',
+          './caddy/build.sh ' + caddy + ' ' + arch,
         ],
       },
+    ] + [
       {
-        name: 'nginx',
-        image: 'nginx:' + nginx,
+        name: 'caddy test ' + distro,
+        image: 'syncloud/platform-' + distro + ':' + platform,
         commands: [
-          './nginx/build.sh',
+          './caddy/test.sh',
         ],
-      },
-      {
-        name: 'nginx test',
-        image: 'syncloud/platform-' + distro_default + ':' + platform,
-        commands: [
-          './nginx/test.sh',
-        ],
-      },
+      }
+      for distro in distros
+    ] + [
       {
         name: 'cli',
         image: 'golang:1.23',
         commands: [
-          'cd cli',
-          'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/install ./cmd/install',
-          'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/configure ./cmd/configure',
-          'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh',
-          'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh',
-          'CGO_ENABLED=0 go build -o ../build/snap/bin/cli ./cmd/cli',
+          './cli/build.sh',
         ],
       },
+    ] + [
+      {
+        name: 'cli test ' + distro,
+        image: 'syncloud/platform-' + distro + ':' + platform,
+        commands: [
+          './cli/test.sh',
+        ],
+      }
+      for distro in distros
+    ] + [
       {
         name: 'slack',
         image: 'golang:' + go,
@@ -107,6 +111,23 @@ local build(arch, test_ui, dind) = [
         ],
       },
       {
+        name: 'livekit',
+        image: 'alpine:' + alpine,
+        commands: [
+          './livekit/build.sh ' + livekit + ' ' + livekit_jwt + ' ' + arch,
+        ],
+      },
+    ] + [
+      {
+        name: 'livekit test ' + distro,
+        image: 'syncloud/platform-' + distro + ':' + platform,
+        commands: [
+          './livekit/test.sh',
+        ],
+      }
+      for distro in distros
+    ] + [
+      {
         name: 'discord',
         image: 'golang:' + go_discord,
         commands: [
@@ -131,8 +152,7 @@ local build(arch, test_ui, dind) = [
         name: 'package',
         image: 'debian:' + debian,
         commands: [
-          'VERSION=$(cat version)',
-          './package.sh ' + name + ' $VERSION ',
+          './package.sh ' + name + ' $DRONE_BUILD_NUMBER',
         ],
       },
     ] + [
@@ -140,10 +160,7 @@ local build(arch, test_ui, dind) = [
         name: 'test ' + distro,
         image: 'python:' + python,
         commands: [
-          'APP_ARCHIVE_PATH=$(realpath $(cat package.name))',
-          'cd test',
-          './deps.sh',
-          'py.test -x -s test.py --distro=' + distro + ' --domain=' + distro + '.com --app-archive-path=$APP_ARCHIVE_PATH --device-host=' + name + '.' + distro + '.com --app=' + name + ' --arch=' + arch,
+          './ci/test.sh test.py ' + distro + ' ' + name + ' ' + arch,
         ],
       }
       for distro in distros
@@ -160,10 +177,7 @@ local build(arch, test_ui, dind) = [
         name: 'test-upgrade',
         image: 'python:' + python,
         commands: [
-          'APP_ARCHIVE_PATH=$(realpath $(cat package.name))',
-          'cd test',
-          './deps.sh',
-          'py.test -x -s upgrade.py --distro=' + distro_default + '  --ui-mode=desktop --domain=' + distro_default + '.com --app-archive-path=$APP_ARCHIVE_PATH --device-host=' + name + '.' + distro_default + '.com --app=' + name + ' --browser=' + browser,
+          './ci/test.sh upgrade.py ' + distro_default + ' ' + name + ' ' + arch,
         ],
       },
       {

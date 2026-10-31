@@ -1,0 +1,72 @@
+{
+	admin off
+	auto_https off
+	persist_config off
+	storage file_system {{{ .DataDir }}}/caddy
+	servers unix/{{{ .DataDir }}}/stream-http.sock {
+		listener_wrappers {
+			proxy_protocol {
+				allow 0.0.0.0/0 ::/0
+			}
+		}
+	}
+	servers {
+		trusted_proxies_unix
+	}
+	layer4 {
+		unix/{{{ .CommonDir }}}/stream.socket {
+			route {
+				proxy_protocol
+				subroute {
+					@turn regexp `(?s)^[\x00\x01]...!\x12` 6
+					route @turn {
+						proxy {
+							proxy_protocol v1
+							upstream unix/{{{ .DataDir }}}/turn.sock
+						}
+					}
+					route {
+						proxy {
+							proxy_protocol v1
+							upstream unix/{{{ .DataDir }}}/stream-http.sock
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+(app) {
+	request_body {
+		max_size 100MB
+	}
+	handle /.well-known/matrix/server {
+		header Content-Type application/json
+		respond `{ "m.server": "{{{ .Domain }}}:443" }`
+	}
+	@tuwunel path /.well-known/matrix/client /.well-known/openid-configuration /_matrix/* /_synapse/client/* /_tuwunel/*
+	handle @tuwunel {
+		reverse_proxy unix/{{{ .DataDir }}}/matrix.sock
+	}
+	handle_path /livekit/jwt/* {
+		reverse_proxy unix/{{{ .DataDir }}}/livekit-jwt.sock
+	}
+	handle_path /livekit/sfu/* {
+		reverse_proxy unix/{{{ .DataDir }}}/livekit.sock
+	}
+	handle {
+		root * {{{ .AppDir }}}/element
+		file_server
+	}
+}
+
+http:// {
+	bind unix/{{{ .CommonDir }}}/web.socket
+	import app
+}
+
+http://:81 {
+	bind unix/{{{ .DataDir }}}/stream-http.sock
+	import app
+}
