@@ -6,6 +6,8 @@ const dismissSelectors = [
   ".mx_Dialog button:has-text('Ok')",
   ".mx_Toast_toast button:has-text('Dismiss')",
   ".mx_Toast_toast button:has-text('OK')",
+  "button:has-text('Not now')",
+  "[role='dialog'] button:text-is('Ok')",
 ]
 
 export async function dismissOverlays(page: Page) {
@@ -25,16 +27,12 @@ export async function dismissOverlays(page: Page) {
 }
 
 export async function composeMenu(page: Page, item: string) {
-  await dismissOverlays(page)
-  const compose = page.getByRole('button', { name: 'New conversation', exact: true })
+  const compose = page.getByTestId('room-list-header').getByRole('button', { name: 'New', exact: true })
   const menuItem = page.getByRole('menuitem', { name: item, exact: true })
-  const ok = page.getByRole('dialog').getByRole('button', { name: 'Ok', exact: true })
   await expect(async () => {
+    await dismissOverlays(page)
     if (!(await menuItem.isVisible())) {
-      await compose.click()
-    }
-    if (await ok.isVisible()) {
-      await ok.click()
+      await compose.click({ timeout: 3_000 })
     }
     await menuItem.click({ timeout: 3_000 })
   }).toPass({ timeout: 30_000 })

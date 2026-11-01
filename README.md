@@ -14,12 +14,14 @@ Listed on the Matrix [distributions page](https://matrix.org/ecosystem/distribut
 | [Tuwunel](https://github.com/cyberb/tuwunel) (fork with a Dendrite importer) | Matrix homeserver |
 | [Element Web](https://github.com/element-hq/element-web) | Web client, served at the app's domain |
 | PostgreSQL | Bridge database |
-| nginx | Reverse proxy, serves the client and the `.well-known` delegation endpoints |
+| [Caddy](https://caddyserver.com) with [caddy-l4](https://github.com/mholt/caddy-l4) | Serves the client and `.well-known`, proxies to the homeserver and LiveKit, and splits TURN from HTTP on the app's stream socket |
 | [mautrix-whatsapp](https://github.com/mautrix/whatsapp) | WhatsApp bridge |
 | [mautrix-telegram](https://github.com/mautrix/telegram) | Telegram bridge |
 | [mautrix-signal](https://github.com/mautrix/signal) | Signal bridge |
 | [mautrix-slack](https://github.com/mautrix/slack) | Slack bridge |
 | [mautrix-discord](https://github.com/mautrix/discord) (`megadiscord` branch, bridgev2) | Discord bridge |
+| [LiveKit](https://github.com/livekit/livekit) | Media server (SFU) for Element Call |
+| [lk-jwt-service](https://github.com/element-hq/lk-jwt-service) | Issues LiveKit tokens to Matrix users |
 
 Exact pinned versions are defined at the top of [`.drone.jsonnet`](.drone.jsonnet).
 
@@ -36,7 +38,7 @@ The fork also lets Tuwunel reach bridges and the identity provider over unix soc
 and maps the identity provider's `groups` claim to server admins.
 
 Tuwunel provides native sliding sync. It stores its data in RocksDB under `$SNAP_DATA`;
-media lives on app storage. All local traffic (nginx, bridges, Authelia, PostgreSQL)
+media lives on app storage. All local traffic (Caddy, bridges, Authelia, PostgreSQL)
 goes over unix sockets.
 
 ### Sign-in
@@ -53,8 +55,18 @@ is disabled, so Authelia's two-factor policy applies to every new session.
 
 Sessions carried over from Dendrite keep working without signing in again.
 
-Not included: MatrixRTC (LiveKit SFU, `lk-jwt-service`, Element Call). Group calls are
-not available; only 1:1 WebRTC calls between clients that support them.
+### Calls
+
+Voice and video calls use Element Call (MatrixRTC), in Element Web and Element X alike,
+for both 1:1 and group calls. The homeserver advertises the bundled LiveKit SFU, and
+Element Web uses its built-in Element Call for every call.
+
+Calls need no router ports at all: all call media goes through port 443. LiveKit listens
+on loopback only and its built-in TURN server is offered to clients as
+`turns:<app domain>:443`; the platform hands the app its raw TLS streams
+(`/var/snap/matrix/common/stream.socket`), and Caddy sends TURN connections to LiveKit
+and everything else to the web server. Calls therefore need a platform with stream socket
+support.
 
 Built for `amd64` and `arm64`.
 

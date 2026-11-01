@@ -16,8 +16,7 @@ export PLAYWRIGHT_SSH_PASSWORD=Password1
 export PLAYWRIGHT_PROJECT=${PROJECT}
 export PLAYWRIGHT_ARTIFACT_DIR=/drone/src/artifact/${ARTIFACT_SUBDIR}
 
-apt-get update -qq
-apt-get install -y -qq sshpass openssh-client curl ca-certificates libnss3-tools
+${DIR}/../../apt.sh sshpass openssh-client curl ca-certificates libnss3-tools
 
 APP_IP=$(getent hosts "$PLAYWRIGHT_APP_DOMAIN" | awk '{print $1}' | head -1)
 if [ -n "$APP_IP" ]; then

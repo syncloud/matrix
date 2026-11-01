@@ -1,7 +1,7 @@
 [global]
 server_name = "{{{ .Domain }}}"
 database_path = "{{{ .DataDir }}}/tuwunel"
-unix_socket_path = "{{{ .DataDir }}}/matrix.socket"
+unix_socket_path = "{{{ .DataDir }}}/matrix.sock"
 unix_socket_perms = 660
 max_request_size = 104857600
 allow_registration = false
@@ -24,6 +24,7 @@ create_if_missing = true
 [global.well_known]
 client = "https://{{{ .Domain }}}"
 server = "{{{ .Domain }}}:443"
+livekit_url = "https://{{{ .Domain }}}/livekit/jwt"
 
 [[global.identity_provider]]
 brand = "authelia"
