@@ -90,7 +90,7 @@ export async function bridgeBot(page: Page, bridge: string, appDomain: string) {
   await expect(botJoined.first()).toBeVisible({ timeout: 60_000 })
   await box.fill('help')
   await box.press('Enter')
-  await expect(page.getByRole('heading', { name: 'Administration', exact: true })).toBeVisible({ timeout: 30_000 })
+  await expect(page.getByRole('heading', { name: 'Administration', exact: true }).first()).toBeVisible({ timeout: 30_000 })
 }
 
 export async function ssoLogin(page: Page, user: string, password: string, expectedUserId: string) {
