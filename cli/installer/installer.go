@@ -19,16 +19,18 @@ import (
 const App = "matrix"
 
 type Variables struct {
-	AppDir       string
-	DataDir      string
-	CommonDir    string
-	DatabaseDir  string
-	DatabasePort int
-	StorageDir   string
-	AuthUrl      string
-	AuthSocket   string
-	Domain       string
-	Url          string
+	AppDir         string
+	DataDir        string
+	CommonDir      string
+	DatabaseDir    string
+	DatabasePort   int
+	StorageDir     string
+	AuthUrl        string
+	AuthSocket     string
+	Domain         string
+	Url            string
+	LiveKitAsToken string
+	LiveKitHsToken string
 }
 
 type Installer struct {
@@ -293,17 +295,29 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
+	liveKitAsToken, err := i.PersistentSecret("livekit-jwt.as_token")
+	if err != nil {
+		return err
+	}
+
+	liveKitHsToken, err := i.PersistentSecret("livekit-jwt.hs_token")
+	if err != nil {
+		return err
+	}
+
 	variables := Variables{
-		AppDir:       i.appDir,
-		CommonDir:    i.commonDir,
-		DataDir:      i.dataDir,
-		DatabaseDir:  i.database.DatabaseDir(),
-		DatabasePort: 5436,
-		StorageDir:   storageDir,
-		AuthUrl:      authUrl,
-		AuthSocket:   strings.TrimSuffix(strings.TrimPrefix(i.platformClient.GetAuthLocalSocket(), "http://unix:"), ":"),
-		Domain:       domain,
-		Url:          url,
+		AppDir:         i.appDir,
+		CommonDir:      i.commonDir,
+		DataDir:        i.dataDir,
+		DatabaseDir:    i.database.DatabaseDir(),
+		DatabasePort:   5436,
+		StorageDir:     storageDir,
+		AuthUrl:        authUrl,
+		AuthSocket:     strings.TrimSuffix(strings.TrimPrefix(i.platformClient.GetAuthLocalSocket(), "http://unix:"), ":"),
+		Domain:         domain,
+		Url:            url,
+		LiveKitAsToken: liveKitAsToken,
+		LiveKitHsToken: liveKitHsToken,
 	}
 
 	err = config.GenerateWithDelims(
@@ -332,6 +346,11 @@ func (i *Installer) UpdateConfigs() error {
 		path.Join(i.dataDir, "data"),
 		path.Join(i.dataDir, "appservices"),
 	)
+	if err != nil {
+		return err
+	}
+
+	err = i.RegisterLiveKitJwt()
 	if err != nil {
 		return err
 	}
@@ -372,6 +391,32 @@ func (i *Installer) RegisterGoBridge(bridge string) error {
 		"-c", path.Join(i.configDir, fmt.Sprint(bridge, ".yaml")),
 		"-r", path.Join(i.dataDir, "appservices", fmt.Sprint(bridge, ".yaml")),
 	)
+}
+
+func (i *Installer) RegisterLiveKitJwt() error {
+	registration, err := os.ReadFile(path.Join(i.configDir, "livekit-jwt-registration.yaml"))
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path.Join(i.dataDir, "appservices", "livekit-jwt.yaml"), registration, 0600)
+}
+
+func (i *Installer) PersistentSecret(name string) (string, error) {
+	file := path.Join(i.dataDir, name)
+	secret, err := os.ReadFile(file)
+	if err == nil {
+		return strings.TrimSpace(string(secret)), nil
+	}
+	if !os.IsNotExist(err) {
+		return "", err
+	}
+	random := make([]byte, 32)
+	_, err = rand.Read(random)
+	if err != nil {
+		return "", err
+	}
+	value := hex.EncodeToString(random)
+	return value, os.WriteFile(file, []byte(value), 0600)
 }
 
 func (i *Installer) FixPermissions() error {

@@ -169,19 +169,69 @@ def test_livekit_token(app_domain, domain, device_user, device_password):
     wait_for_rest(requests.session(), "https://{0}/livekit/sfu/".format(app_domain), 200, 30)
     session = sso_login(app_domain, 'auth.' + domain, device_user, device_password)
     headers = {'Authorization': 'Bearer ' + session['access_token']}
+    room_id = create_room(app_domain, headers)
+    sfu = request_sfu_token(app_domain, session, headers, room_id)
+    assert sfu.status_code == 200, sfu.text
+    assert sfu.json()['url'] == 'wss://{0}/livekit/sfu'.format(app_domain), sfu.text
+    validate_livekit_jwt(app_domain, sfu.json()['jwt'])
+
+
+def test_livekit_token_requires_membership(app_domain, domain, device_user, device_password):
+    session = sso_login(app_domain, 'auth.' + domain, device_user, device_password)
+    headers = {'Authorization': 'Bearer ' + session['access_token']}
+    sfu = request_sfu_token(app_domain, session, headers, '!call:{0}'.format(app_domain))
+    assert sfu.status_code == 403, sfu.text
+
+
+def test_livekit_token_through_homeserver(app_domain, domain, device_user, device_password):
+    session = sso_login(app_domain, 'auth.' + domain, device_user, device_password)
+    headers = {'Authorization': 'Bearer ' + session['access_token']}
+    room_id = create_room(app_domain, headers)
+    token = request_homeserver_token(app_domain, headers, room_id)
+    assert token.status_code == 200, token.text
+    validate_livekit_jwt(app_domain, token.json()['jwt'])
+
+
+def test_livekit_token_through_homeserver_requires_membership(app_domain, domain, device_user, device_password):
+    session = sso_login(app_domain, 'auth.' + domain, device_user, device_password)
+    headers = {'Authorization': 'Bearer ' + session['access_token']}
+    token = request_homeserver_token(app_domain, headers, '!call:{0}'.format(app_domain))
+    assert token.status_code == 403, token.text
+
+
+def create_room(app_domain, headers):
+    room = requests.post("https://{0}/_matrix/client/v3/createRoom".format(app_domain),
+                         verify=False, headers=headers, json={})
+    assert room.status_code == 200, room.text
+    return room.json()['room_id']
+
+
+def request_sfu_token(app_domain, session, headers, room_id):
     openid = requests.post(
         "https://{0}/_matrix/client/v3/user/{1}/openid/request_token".format(app_domain, session['user_id']),
         verify=False, headers=headers, json={})
     assert openid.status_code == 200, openid.text
-    sfu = requests.post("https://{0}/livekit/jwt/sfu/get".format(app_domain), verify=False, json={
-        'room': '!call:{0}'.format(app_domain),
+    return requests.post("https://{0}/livekit/jwt/sfu/get".format(app_domain), verify=False, json={
+        'room': room_id,
         'openid_token': openid.json(),
         'device_id': session['device_id'],
     })
-    assert sfu.status_code == 200, sfu.text
-    assert sfu.json()['url'] == 'wss://{0}/livekit/sfu'.format(app_domain), sfu.text
+
+
+def request_homeserver_token(app_domain, headers, room_id):
+    return requests.post("https://{0}/_matrix/client/v1/rtc/livekit/get_token".format(app_domain),
+                         verify=False, headers=headers, json={
+                             'server_name': app_domain,
+                             'url': 'wss://{0}/livekit/sfu'.format(app_domain),
+                             'room_id': room_id,
+                             'slot_id': 'm.call#ROOM',
+                             'member_id': 'test-member',
+                         })
+
+
+def validate_livekit_jwt(app_domain, jwt):
     validate = requests.get("https://{0}/livekit/sfu/rtc/validate".format(app_domain), verify=False,
-                            params={'access_token': sfu.json()['jwt']})
+                            params={'access_token': jwt})
     assert validate.status_code == 200, validate.text
 
 
